@@ -109,6 +109,44 @@ class RoadNetwork:
             return np.inf
         return rem_a + d + into_b
 
+    def path_between(self, a: int, b: int, cutoff: float):
+        """Intermediate arcs of the shortest drivable path from the end of arc a
+        to the start of arc b (exclusive of a and b). [] if b directly follows a,
+        None if b is not reachable within `cutoff` metres. Used to turn a
+        per-observation arc sequence into a connected route polyline."""
+        src, dst = int(self.v[a]), int(self.u[b])
+        if src == dst:
+            return []
+        dist = {src: 0.0}
+        pred = {}
+        heap = [(0.0, src)]
+        done = set()
+        ptr, adj, L, V = self._adj_ptr, self._adj_arcs, self.length, self.v
+        while heap:
+            d, n = heapq.heappop(heap)
+            if n in done:
+                continue
+            if n == dst:
+                break
+            done.add(n)
+            for e in adj[ptr[n]:ptr[n + 1]]:
+                nd = d + L[e]
+                if nd > cutoff:
+                    continue
+                m = int(V[e])
+                if nd < dist.get(m, np.inf):
+                    dist[m] = nd
+                    pred[m] = int(e)
+                    heapq.heappush(heap, (nd, m))
+        if dst not in dist:
+            return None
+        path, n = [], dst
+        while n != src:
+            e = pred[n]
+            path.append(e)
+            n = int(self.u[e])
+        return path[::-1]
+
     # ----------------------------------------------------------- connectivity
     def components(self):
         """Weakly and strongly connected component labels (scipy csgraph)."""

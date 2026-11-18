@@ -1,0 +1,111 @@
+[candidates] train 00000001 n=1315
+[candidates] train 00000002 n=7243
+[candidates] train 00000003 n=821
+[candidates] train 00000004 n=1064
+[candidates] train 00000005 n=1045
+[candidates] train 00000006 n=1450
+[candidates] train 00000008 n=3093
+[candidates] train 00000010 n=2711
+[candidates] train 00000011 n=2828
+[candidates] train 00000012 n=1608
+[candidates] train 00000013 n=2580
+[candidates] train 00000014 n=448
+[candidates] train 00000016 n=1305
+[candidates] train 00000018 n=379
+[candidates] train 00000019 n=2354
+[candidates] train 00000020 n=2353
+[candidates] train 00000021 n=15783
+[candidates] train 00000022 n=474
+[candidates] train 00000024 n=801
+[candidates] train 00000025 n=1179
+[candidates] train 00000026 n=361
+[candidates] train 00000027 n=694
+[candidates] train 00000028 n=3565
+[candidates] train 00000029 n=733
+[candidates] train 00000031 n=4245
+[candidates] train 00000032 n=2464
+[candidates] train 00000033 n=5844
+[candidates] train 00000034 n=3614
+[candidates] train 00000035 n=1643
+[candidates] train 00000036 n=1368
+[candidates] train 00000037 n=677
+[candidates] train 00000038 n=1287
+[candidates] train 00000039 n=363
+[candidates] train 00000041 n=1019
+[candidates] train 00000042 n=7739
+[candidates] train 00000043 n=2322
+[candidates] train 00000044 n=546
+[candidates] train 00000045 n=640
+[candidates] train 00000046 n=1401
+[candidates] train 00000047 n=1272
+[candidates] train 00000048 n=1240
+[candidates] train 00000050 n=518
+[candidates] train 00000051 n=984
+[candidates] train 00000053 n=1304
+[candidates] train 00000054 n=19313
+[candidates] train 00000055 n=2472
+[candidates] train 00000057 n=1645
+[candidates] train 00000058 n=599
+[candidates] train 00000060 n=854
+[candidates] train 00000061 n=1430
+[candidates] train 00000062 n=3378
+[candidates] train 00000063 n=2781
+[candidates] train 00000064 n=2093
+[candidates] train 00000066 n=4325
+[candidates] train 00000068 n=747
+[candidates] train 00000069 n=2067
+[candidates] train 00000070 n=2076
+[candidates] train 00000071 n=850
+[candidates] train 00000072 n=969
+[candidates] train 00000074 n=1929
+[candidates] train 00000075 n=1628
+[candidates] train 00000078 n=2909
+[candidates] train 00000079 n=689
+[candidates] train 00000080 n=2510
+[candidates] train 00000081 n=3224
+[candidates] train 00000082 n=4268
+[candidates] train 00000083 n=1507
+[candidates] train 00000084 n=16031
+[candidates] train 00000085 n=1092
+[candidates] train 00000086 n=4143
+[candidates] train 00000088 n=876
+[candidates] train 00000089 n=1228
+[candidates] train 00000090 n=536
+[candidates] train 00000092 n=7892
+[candidates] train 00000093 n=1211
+[candidates] train 00000095 n=1551
+[candidates] train 00000096 n=3271
+[candidates] train 00000097 n=1740
+[candidates] train 00000098 n=5584
+[candidates] train 00000099 n=2322
+[candidates] student_test 00000000 n=2503
+[candidates] student_test 00000007 n=1354
+[candidates] student_test 00000009 n=1049
+[candidates] student_test 00000040 n=2995
+[candidates] student_test 00000052 n=262
+[candidates] student_test 00000056 n=3958
+[candidates] student_test 00000065 n=768
+[candidates] student_test 00000076 n=1486
+[candidates] student_test 00000077 n=3911
+[candidates] student_test 00000091 n=874
+candidate scan took 45s
+{
+  "partition_used": "train (78 trips, 33 and 54 excluded)",
+  "radius_m": 75,
+  "k_max": 16,
+  "miss_rate_uncapped_at_R": 0.008736221761431845,
+  "miss_rate_at_100m": 0.00604059805740478,
+  "miss_rate_R_K": 0.010105860526028593,
+  "mean_candidates_R_K": 9.918547418967586,
+  "rule": "R: smallest radius within 0.5pp of the 100 m miss rate; K: smallest cap within 0.2pp of uncapped at R",
+  "student_test_miss_rate_R_K (info only)": 0.0014091858037578288
+}
+[features] train: rows=1,935,009 points=208,417 positives=185,323 feature time 6.1s
+[features] student_test: rows=213,304 points=19,160 positives=19,133 feature time 0.6s
+      partition  excluded_from_training  ...  obs_no_candidates  miss_rate
+0  student_test                   False  ...                  0   0.001409
+1         train                   False  ...                717   0.010106
+2         train                    True  ...              12855   0.844377
+
+[3 rows x 7 columns]
+done in 56s

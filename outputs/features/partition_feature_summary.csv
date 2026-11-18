@@ -1,0 +1,4 @@
+partition,excluded_from_training,trips,obs,rows,obs_no_candidates,miss_rate
+student_test,False,10,19160,213304,0,0.0014091858037578225
+train,False,78,183260,1817673,717,0.01010586052602859
+train,True,2,25157,117336,12855,0.844377310490122

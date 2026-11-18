@@ -1,0 +1,11 @@
+{
+  "partition_used": "train (78 trips, 33 and 54 excluded)",
+  "radius_m": 75,
+  "k_max": 16,
+  "miss_rate_uncapped_at_R": 0.008736221761431845,
+  "miss_rate_at_100m": 0.00604059805740478,
+  "miss_rate_R_K": 0.010105860526028593,
+  "mean_candidates_R_K": 9.918547418967586,
+  "rule": "R: smallest radius within 0.5pp of the 100 m miss rate; K: smallest cap within 0.2pp of uncapped at R",
+  "student_test_miss_rate_R_K (info only)": 0.0014091858037578288
+}

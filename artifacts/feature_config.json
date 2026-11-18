@@ -1,0 +1,44 @@
+{
+  "radius_m": 75.0,
+  "k_max": 16,
+  "head_windows": [
+    2,
+    5
+  ],
+  "min_move_m": 2.0,
+  "ctx_offsets": [
+    -5,
+    -2,
+    2,
+    5
+  ],
+  "ctx_clip_m": 200.0,
+  "version": "1.0",
+  "feature_names": [
+    "dist",
+    "dist_rank",
+    "dist_minus_min",
+    "dist_ratio",
+    "n_cand",
+    "head_diff_w2",
+    "head_diff_w5",
+    "head_diff_w2_minus_min",
+    "low_motion",
+    "speed",
+    "dt_prev",
+    "dt_next",
+    "seg_len",
+    "t_proj",
+    "dist_to_end",
+    "zero_len",
+    "ctx_d_m5",
+    "ctx_d_m2",
+    "ctx_d_p2",
+    "ctx_d_p5",
+    "ctx_mean",
+    "ctx_mean_minus_min",
+    "two_way",
+    "in_deg_u",
+    "out_deg_v"
+  ]
+}
