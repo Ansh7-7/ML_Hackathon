@@ -1,0 +1,12 @@
+# raw data (not redistributed) and local env
+data/raw/
+data/eval/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+# large intermediate feature tables (rebuilt by scripts/02_build_dataset.py)
+data/processed/
+.ipynb_checkpoints/
+.DS_Store
