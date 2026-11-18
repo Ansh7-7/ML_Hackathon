@@ -9,6 +9,7 @@ networkx==3.7
 numpy==2.5.5
 optuna==5.1.0
 pandas==3.1.1
+pillow==13.0.0
 playwright==1.65.2
 pyarrow==26.0.1
 pydantic==2.14.3
