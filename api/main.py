@@ -32,7 +32,8 @@ import time
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
-import numpy as np
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -52,10 +53,6 @@ if os.environ.get("API_LOG_FILE"):
     _f = logging.FileHandler(os.environ["API_LOG_FILE"]); _f.setFormatter(_fmt); log.addHandler(_f)
 log.propagate = False
 
-app = FastAPI(title="PathSnap map-matching API", version="1.0")
-# the UI runs on a different laptop / origin
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
-
 ART = Artifacts(ART_DIR)
 TRIP_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
@@ -67,7 +64,6 @@ def list_eval_trips():
                   if TRIP_RE.match(d) and os.path.isfile(os.path.join(EVAL_DIR, d, f"{d}.track")))
 
 
-@app.on_event("startup")
 def _startup():
     try:
         ip = socket.gethostbyname(socket.gethostname())
@@ -81,6 +77,18 @@ def _startup():
              ART.hcfg.back_tol_m)
     log.info("EVAL_DIR=%s  (%d trips)", EVAL_DIR, len(list_eval_trips()))
     log.info("=" * 78)
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    _startup()
+    yield
+    log.info("PathSnap API shutting down")
+
+
+app = FastAPI(title="PathSnap map-matching API", version="1.0", lifespan=lifespan)
+# the UI runs on a different laptop / origin
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST", "OPTIONS"], allow_headers=["*"])
 
 
 @app.middleware("http")

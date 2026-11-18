@@ -98,7 +98,7 @@ log_text = open(api_log).read()
 lines = [l for l in log_text.splitlines() if l.strip()]
 page_html = ("<html><body style='margin:0;background:#0c0c0c'><div style='font:12px/1.35 Consolas,ui-monospace,monospace;"
              "color:#cccccc;padding:10px 12px;white-space:pre'>"
-             "<div style='color:#8ab4f8'>Laptop 1 console - uvicorn api.main:app --host 0.0.0.0 --port 8000"
+             f"<div style='color:#8ab4f8'>Laptop 1 console - uvicorn api.main:app --host 0.0.0.0 --port {args.api_port}"
              " (captured stdout, rendered)</div>" +
              "\n".join(html.escape(l) for l in lines) + "</div></body></html>")
 tmp = os.path.join(OUT, "_api_console.html")
