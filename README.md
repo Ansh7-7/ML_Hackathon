@@ -62,6 +62,7 @@ Times are from a 4-core laptop-class CPU.
 | 7 | `python scripts/07_maps.py` | Folium HTML maps and PNG screenshots | train (EDA maps), student_test | ~2 min |
 | 8 | `python scripts/08_screenshots.py` | starts API and UI, runs every student_test trip, captures UI screenshots and the API console log | student_test | ~2 min |
 | 9a | `python scripts/09_static_viewer.py` | single-file interactive viewer of the deployed pipeline's results for every trip in `EVAL_DIR` (`outputs/maps/pathsnap_viewer.html`, opens in any browser without Python) | student_test | ~15 s |
+| 10 | `python scripts/10_render_logs.py` | renders the captured training logs (`outputs/logs/*.log`) as terminal-style PNGs for slides / the viva | – | seconds |
 | 9 | `python report/build_report.py` | builds `report/PathSnap_Technical_Report.pdf` from `outputs/` | – | seconds |
 | – | `python scripts/check_report_numbers.py` | cross-checks every decimal number in the PDF against `outputs/` (prints its own chance-match rate) | – | seconds |
 | – | `pytest -q tests/test_api.py` | API contract: all trips predict, IDs only, no reference data in responses | EVAL_DIR | ~1 min |

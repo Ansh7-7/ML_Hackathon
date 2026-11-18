@@ -1,0 +1,16 @@
+# Re-run (in a separate clean clone) of the first two models of step 3, whose original terminal output was not saved.
+# Metrics are deterministic (seed 42) and identical to outputs/models/per_model/*.json; fit/inference times differ slightly.
+$ python scripts/03_train_compare.py --models GaussianNB LogisticRegression --force
+train rows 1,817,673 (fit rows with stride 3: 606,345), student_test rows 213,304, points 19,160
+[GaussianNB] fold 0: val top1=0.8178 macroF1=0.8116 logloss=0.6930 | train macroF1=0.8425 | fit 0s
+[GaussianNB] fold 1: val top1=0.8626 macroF1=0.8240 logloss=0.8160 | train macroF1=0.8333 | fit 0s
+[GaussianNB] fold 2: val top1=0.8541 macroF1=0.8370 logloss=0.6859 | train macroF1=0.8349 | fit 0s
+[GaussianNB] fold 3: val top1=0.8513 macroF1=0.8437 logloss=0.5495 | train macroF1=0.8345 | fit 0s
+[GaussianNB] fold 4: val top1=0.8880 macroF1=0.8558 logloss=0.4533 | train macroF1=0.8314 | fit 0s
+[GaussianNB] CV top1=0.8548±0.0252 CV macroF1=0.8344 | ST top1=0.8564 macroF1=0.8255 logloss=0.6217 cont=0.9216 | fit 0s inf 0.05s
+[LogisticRegression] fold 0: val top1=0.8392 macroF1=0.8913 logloss=0.0970 | train macroF1=0.9271 | fit 2s
+[LogisticRegression] fold 1: val top1=0.8787 macroF1=0.9332 logloss=0.0876 | train macroF1=0.9170 | fit 2s
+[LogisticRegression] fold 2: val top1=0.8716 macroF1=0.9178 logloss=0.0943 | train macroF1=0.9228 | fit 2s
+[LogisticRegression] fold 3: val top1=0.8776 macroF1=0.9170 logloss=0.0798 | train macroF1=0.9223 | fit 2s
+[LogisticRegression] fold 4: val top1=0.9059 macroF1=0.9319 logloss=0.0639 | train macroF1=0.9192 | fit 3s
+[LogisticRegression] CV top1=0.8746±0.0238 CV macroF1=0.9183 | ST top1=0.8707 macroF1=0.9174 logloss=0.0758 cont=0.9271 | fit 3s inf 0.02s
