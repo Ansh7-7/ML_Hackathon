@@ -120,6 +120,27 @@ def sec3(O, A, rj):
         rows.append([n] + [f4(fold_top1.loc[n, k]) for k in range(5)])
     st += [table(rows, col_widths=[3.4 * cm] + [2 * cm] * 5),
            P("Table 6 - Held-out Top-1 per CV fold (train partition). Source: outputs/models/cv_folds_all.csv.", "cap")]
+    PC = pd.read_csv(O("models", "paired_comparison.csv")).set_index("other")
+    rows = [["XGBoost vs", "CV folds XGBoost better (of 5)", "CV mean diff [pp]", "student_test trips better / worse",
+             "student_test diff [pp] (95% CI over trips)"]]
+    for o, r in PC.iterrows():
+        rows.append([o, str(r.cv_folds_selected_better), f"{100 * r.cv_mean_diff:+.2f} pp",
+                     f"{r.st_trips_selected_better} / {r.st_trips_selected_worse}",
+                     f"{100 * r.st_weighted_diff:+.2f} pp ({100 * r.st_ci_low:+.2f} pp, {100 * r.st_ci_high:+.2f} pp)"])
+    clear = [o for o, r in PC.iterrows() if r.cv_folds_selected_better == 5 and r.st_ci_excludes_zero]
+    tied = [o for o in PC.index if o not in clear]
+    assert set(tied) == {"RandomForest", "LightGBM"}
+    st += [table(rows, col_widths=[3.4 * cm, 2.8 * cm, 2.4 * cm, 3.2 * cm, 5.6 * cm]),
+           P("Table 6b - Paired comparison of the selected model with each other model: per-fold CV differences (train) "
+             "and per-trip student_test differences with a 95% bootstrap confidence interval over the 10 trips. Source: "
+             "scripts/03d_paired_comparison.py -> outputs/models/paired_comparison.csv.", "cap"),
+           P(f"XGBoost is better than {', '.join(clear)} in every CV fold and on student_test with a confidence interval that "
+             f"excludes zero - the gradient-boosted/bagged tree ensembles genuinely beat the other families. Against "
+             f"{' and '.join(tied)} the evidence is mixed: CV differences are within "
+             f"+-{100 * PC.loc[tied, ['cv_min_diff', 'cv_max_diff']].abs().max().max():.2f} pp and change sign between folds; on "
+             f"student_test XGBoost is ahead of RandomForest on {PC.loc['RandomForest', 'st_trips_selected_better']} of 10 "
+             f"trips but its lead over LightGBM is not significant. We therefore describe XGBoost as <i>tied</i> with these "
+             f"two on accuracy and chosen for calibration and speed, not as the most accurate model.")]
 
     xe = E.loc["XGBoost"]
     st += [P("<b>What limits Top-1?</b> We classified every student_test Top-1 error (Figure 11). For XGBoost, "
@@ -688,7 +709,7 @@ def sec8(O, A, rj):
     st += [P("Appendix - reproduction", "h1"),
            P("pip install -r requirements.txt; place data in data/raw/{train,student_test}; then run in order: "
              "scripts/01_eda.py, 02_build_dataset.py, 03_train_compare.py, 03b_plot_compare.py, 03c_error_analysis.py, "
-             "04_bayes_opt.py --trials 40, 05_hmm_eval.py, 05b_hmm_error_analysis.py, 07_maps.py, 08_screenshots.py, "
+             "03d_paired_comparison.py, 04_bayes_opt.py --trials 40, 05_hmm_eval.py, 05b_hmm_error_analysis.py, 07_maps.py, 08_screenshots.py, "
              "report/build_report.py, scripts/check_report_numbers.py. Logs of the runs used for this report are in "
              "outputs/logs/. Seeds: 42 (numpy, scikit-learn, LightGBM, XGBoost, Optuna).", "small")]
     return st

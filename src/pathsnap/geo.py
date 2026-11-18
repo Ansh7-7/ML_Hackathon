@@ -1,10 +1,10 @@
 """Geometry helpers.
 
-Coordinates are WGS84 lon/lat in degrees. Every trip covers a few km, so we
-project to a local equirectangular (tangent-plane) frame in metres centred on
-the trip. Over < 50 km the distortion of this projection is well under 0.1 %,
-far below GPS noise (~5-20 m), and it lets us use fast vectorised Euclidean
-maths. Great-circle (haversine) distance is used for whole-trip summaries.
+Coordinates are WGS84 lon/lat in degrees. Each trip is projected to a local
+equirectangular (tangent-plane) frame in metres centred on the trip. Trips span
+up to ~80 km; the east-west scale error at the edge of the largest trip is
+about 0.7 % (median trip ~0.05 %), i.e. < 0.6 m on the <= 75 m distances used for
+candidates - below GPS noise - and it allows fast vectorised Euclidean maths. Great-circle (haversine) distance is used for whole-trip summaries.
 """
 from __future__ import annotations
 

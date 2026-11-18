@@ -18,6 +18,8 @@ import numpy as np
 import pandas as pd
 
 from rl import KeepTogether, P, PageBreak, Spacer, TEXT_W, bullets, build, cm, img, table
+import sections  # noqa: E402
+from sections import dv  # noqa: E402
 
 O = lambda *p: os.path.join(ROOT, "outputs", *p)
 A = lambda *p: os.path.join(ROOT, "artifacts", *p)
@@ -45,6 +47,13 @@ fsum = pd.read_csv(O("features", "partition_feature_summary.csv"))
 fcfg = rj(A("feature_config.json"))
 tr_inv, st_inv = inv[inv.partition == "train"], inv[inv.partition == "student_test"]
 excl = tr_inv[tr_inv.trip_id.isin(["00000033", "00000054"])].set_index("trip_id")
+# worst-case east-west scale error of the local equirectangular projection within each trip's bounding box
+_lat0 = (inv.lat_min + inv.lat_max) / 2
+_err = np.maximum(abs(np.cos(np.radians(inv.lat_min)) / np.cos(np.radians(_lat0)) - 1),
+                  abs(np.cos(np.radians(inv.lat_max)) / np.cos(np.radians(_lat0)) - 1))
+proj_err_max = dv("projection_scale_error_max", float(_err.max()))
+proj_err_med = dv("projection_scale_error_median", float(_err.median()))
+bbox_max = float(inv.bbox_diag_km.max())
 
 story = []
 
@@ -147,8 +156,11 @@ story += [P("2.2.3 Preprocessing", "h2"),
           *bullets([
               "<b>Coordinate system.</b> Longitude/latitude are angular, so Euclidean distance in degrees is meaningless. "
               "Each trip is projected to a local equirectangular tangent plane in metres centred on the trip's mean "
-              "position (distortion &lt; 0.1% over the &lt; 50 km extent of a trip, far below GPS noise); haversine is used "
-              "for whole-trip summaries.",
+              f"position. Trips extend up to {bbox_max:.1f} km (bounding-box diagonal); the worst-case east-west scale "
+              f"error at the edge of a trip is {pct(proj_err_max, 2)} (median over trips {pct(proj_err_med, 3)}). The "
+              f"distances that drive the model are local (candidates within {fcfg['radius_m']:.0f} m), where this is at most "
+              f"{dv('projection_abs_error_at_radius_m', proj_err_max * fcfg['radius_m']):.2f} m - well below the GPS noise. "
+              "Haversine is used for whole-trip summaries.",
               "<b>Per-observation labels.</b> The route lists arcs in order but not which GPS fix belongs to which arc. "
               "We derive a reference arc per observation with a monotone dynamic programme (src/pathsnap/labels.py) that keeps "
               "the route order and minimises the summed point-to-segment distance. These derived labels inherit any error of "
@@ -159,7 +171,8 @@ story += [P("2.2.3 Preprocessing", "h2"),
               f"{tr_inv[~tr_inv.trip_id.isin(excl.index)].gps_to_route_median_m.median():.1f} m median), and "
               f"{pct(fsum[fsum.excluded_from_training].miss_rate.iloc[0])} of their observations have no reference arc "
               f"within {fcfg['radius_m']:.0f} m - the GPS and the reference route do not describe the same drive "
-              "(Figure 7 shows trip 33). Training on them would teach the model that the right segment is ~130 m away.",
+              "(Figure 8 shows trip 33). Training on them would teach the model that the right segment is about "
+              f"{dv('excluded_trips_mean_median_offset_m', excl.gps_to_route_median_m.mean()):.0f} m away.",
               "<b>Gaps and jumps</b> are kept; features use clipped time deltas, and the HMM splits the chain at long gaps "
               "(section 5).",
               f"<b>Training subsample.</b> 1 Hz fixes are strongly autocorrelated, so models are fitted on every 3rd observation "
@@ -194,7 +207,7 @@ maps_idx = pd.read_csv(O("maps", "maps_index.csv"), dtype={"trip_id": str})
 eda_maps = maps_idx[maps_idx.partition == "train"]
 for _, r in eda_maps.iterrows():
     story.append(img(O("maps", r.png), width=15 * cm,
-                     caption=f"Figure {7 if r.trip_id == '00000033' else 8} - Folium map, train trip {r.trip_id} ({r.purpose}): "
+                     caption=f"Figure {8 if r.trip_id == '00000033' else 7} - Folium map, train trip {r.trip_id} ({r.purpose}): "
                              f"GPS observations, nearby road network and reference route; interactive HTML: "
                              f"outputs/maps/{r.map}. Partition: train."))
 
@@ -241,8 +254,7 @@ story += [P("2.2.6 Features and why we chose them", "h2"),
             f"(78 trips), student_test {fsum[fsum.partition == 'student_test'].rows.iloc[0]:,} rows "
             f"(10 trips). Source: outputs/features/partition_feature_summary.csv.", "small")]
 
-# ---------------------------------------------------------------- later sections
-import sections  # noqa: E402  (sections 3-8, need results of steps 3-8)
+# ---------------------------------------------------------------- later sections (3-8)
 
 story += sections.build_all(O, A, rj)
 out = os.path.join(HERE, "PathSnap_Technical_Report.pdf")

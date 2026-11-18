@@ -54,6 +54,7 @@ Times are from a 4-core laptop-class CPU.
 | 3 | `python scripts/03_train_compare.py` | 9 models, 5-fold GroupKFold by trip on train, refit, evaluate on student_test | train (CV), student_test (comparison) | ~1.5 h (RF, KNN, MLP dominate) |
 | 3b | `python scripts/03b_plot_compare.py` | comparison table, model selection, all comparison plots | from step 3 outputs | seconds |
 | 3c | `python scripts/03c_error_analysis.py` | Top-1 error types per model (reverse direction / adjacent / other / missed) | student_test | ~1 min |
+| 3d | `python scripts/03d_paired_comparison.py` | paired per-fold / per-trip comparison of the selected model vs every other (bootstrap CI) | train (CV), student_test | seconds |
 | 4 | `python scripts/04_bayes_opt.py --trials 40` | Optuna TPE on the selected model (objective CV Top-1, train only), tuned vs untuned, `artifacts/model.joblib` | train (search), student_test (after search) | ~30–60 min |
 | 5 | `python scripts/05_hmm_eval.py` | HMM decoder grid (selection on train OOF), classifier-only vs HMM, `artifacts/hmm_config.json` | train, student_test | ~20 min |
 | 5b | `python scripts/05b_hmm_error_analysis.py` | what the HMM fixed and broke (error type, stationary, near breaks) | train, student_test | ~2 min |

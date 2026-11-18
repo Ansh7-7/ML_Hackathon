@@ -73,7 +73,7 @@ for k, c in zip(["reverse_twin", "adjacent", "other", "missed"], ["tab:red", "ta
     v = E[f"{k}_share_of_obs"].to_numpy() * 100
     ax.bar(E.model, v, bottom=bottom, label=k.replace("_", " "), color=c)
     bottom += v
-ax.set_ylabel("% of student-test observations"); ax.legend(fontsize=8)
+ax.set_ylabel("% of student-test observations"); ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1))
 ax.set_title("Top-1 error types per model (student-test, classifier only)")
 ax.tick_params(axis="x", rotation=25)
 fig.tight_layout(); fig.savefig(os.path.join(ROOT, "outputs", "figures", "error_types.png"), dpi=130); plt.close(fig)
