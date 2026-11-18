@@ -1,0 +1,2 @@
+trips,points,top1_hmm_weighted,top1_classifier_weighted,continuity_hmm_weighted,route_precision_hmm_mean,route_recall_hmm_mean,trips_hmm_better,trips_hmm_worse,api_ms_max
+10,19674,0.9636939056622955,0.9172473975805632,0.9996556673782656,0.98369,0.9925599999999999,9,1,1557

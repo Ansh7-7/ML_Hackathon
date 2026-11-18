@@ -11,7 +11,7 @@
    (outputs/screenshots/api_console.png). The PNG is a rendering of the real
    captured text, not a photo of a terminal window.
 
-Usage: python scripts/08_screenshots.py [--offline-assets] [--eval-dir DIR]
+Usage: python scripts/08_screenshots.py [--offline-assets] [--eval-dir DIR] [--out-dir DIR]
 """
 import argparse
 import html
@@ -33,9 +33,11 @@ ap.add_argument("--offline-assets", action="store_true")
 ap.add_argument("--eval-dir", default=os.path.join(ROOT, "data", "raw", "student_test"))
 ap.add_argument("--api-port", type=int, default=8000)
 ap.add_argument("--ui-port", type=int, default=8501)
+ap.add_argument("--out-dir", default=os.path.join(ROOT, "outputs", "screenshots"),
+                help="where screenshots, the API log and ui_run_results.csv go")
 args = ap.parse_args()
 
-OUT = os.path.join(ROOT, "outputs", "screenshots")
+OUT = os.path.abspath(args.out_dir)
 os.makedirs(OUT, exist_ok=True)
 api_log = os.path.join(OUT, "api_console.log")
 env = dict(os.environ, EVAL_DIR=args.eval_dir, PYTHONUNBUFFERED="1")

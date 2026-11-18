@@ -108,6 +108,17 @@ directly from disk. The UI lists the trips from `GET /trips`, sends the selected
 route with a legend, along with the metrics. Leaflet is bundled in `ui/vendor/`, so the UI works
 offline. The basemap tiles need internet; without it, only the basemap is missing.
 
+### Evaluator trips
+
+The evaluator trips were run with the frozen system (no retraining or tuning):
+
+```bash
+python scripts/08_screenshots.py --eval-dir data/eval --out-dir outputs/evaluator_run
+```
+
+The results are in `outputs/evaluator_run/`: UI screenshots per trip, `api_console.log`, `per_trip_scores.csv` and `summary.csv`.
+The data itself (`data/eval/`) is not committed.
+
 ### Screenshot of the API console (report section 7)
 
 `scripts/08_screenshots.py` captures the API's stdout to `outputs/screenshots/api_console.log` and renders it to a

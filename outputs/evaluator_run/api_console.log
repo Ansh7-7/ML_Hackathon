@@ -1,0 +1,73 @@
+INFO:     Started server process [1633]
+INFO:     Waiting for application startup.
+2026-11-18 07:17:51 | INFO | ==============================================================================
+2026-11-18 07:17:51 | INFO | PathSnap API starting  host=vm  ip=127.0.0.1
+2026-11-18 07:17:51 | INFO | model=XGBoost (tuned=True)  artifacts=/home/user/work/PathSnap_handover/pathsnap/artifacts
+2026-11-18 07:17:51 | INFO | feature config: radius=75 m, k_max=16 | HMM: beta=10, w=0.5, top_k=8, back_tol=30 m
+2026-11-18 07:17:51 | INFO | EVAL_DIR=/home/user/work/PathSnap_handover/pathsnap/data/eval  (10 trips)
+2026-11-18 07:17:51 | INFO | ==============================================================================
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8010 (Press CTRL+C to quit)
+2026-11-18 07:17:51 | INFO | GET /health from 127.0.0.1 -> 200 (4 ms)
+INFO:     127.0.0.1:56990 - "GET /health HTTP/1.1" 200 OK
+2026-11-18 07:17:51 | INFO | GET /trips from 127.0.0.1 -> 200 (1 ms)
+INFO:     127.0.0.1:56996 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 07:17:52 | INFO | GET /health from 127.0.0.1 -> 200 (1 ms)
+INFO:     127.0.0.1:57010 - "GET /health HTTP/1.1" 200 OK
+2026-11-18 07:17:52 | INFO | GET /trips from 127.0.0.1 -> 200 (1 ms)
+INFO:     127.0.0.1:57010 - "GET /trips HTTP/1.1" 200 OK
+2026-11-18 07:17:53 | INFO | predict trip=00000015: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:17:54 | INFO | predict trip=00000015: 6854 GPS points, 3225 arcs, 67422 candidate rows, 1 HMM breaks | net 22 ms, features 163 ms, classifier 372 ms, HMM 632 ms
+2026-11-18 07:17:54 | INFO | predict trip=00000015: SCORE top1 HMM=0.9441 (classifier 0.8424) | continuity 0.9993 | route P=0.8982 R=0.9911 | miss=0.0000 | total 1341 ms
+2026-11-18 07:17:54 | INFO | POST /predict from 127.0.0.1 -> 200 (1399 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:17:55 | INFO | predict trip=00000017: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:17:56 | INFO | predict trip=00000017: 1346 GPS points, 76425 arcs, 19353 candidate rows, 0 HMM breaks | net 561 ms, features 88 ms, classifier 133 ms, HMM 649 ms
+2026-11-18 07:17:57 | INFO | predict trip=00000017: SCORE top1 HMM=0.9651 (classifier 0.9413) | continuity 1.0000 | route P=0.9894 R=0.9985 | miss=0.0037 | total 1557 ms
+2026-11-18 07:17:57 | INFO | POST /predict from 127.0.0.1 -> 200 (1588 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:17:58 | INFO | predict trip=00000023: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:17:58 | INFO | predict trip=00000023: 458 GPS points, 10596 arcs, 3512 candidate rows, 0 HMM breaks | net 112 ms, features 26 ms, classifier 32 ms, HMM 100 ms
+2026-11-18 07:17:58 | INFO | predict trip=00000023: SCORE top1 HMM=0.9694 (classifier 0.9454) | continuity 1.0000 | route P=0.9950 R=1.0000 | miss=0.0000 | total 290 ms
+2026-11-18 07:17:58 | INFO | POST /predict from 127.0.0.1 -> 200 (296 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:17:59 | INFO | predict trip=00000030: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:17:59 | INFO | predict trip=00000030: 654 GPS points, 24218 arcs, 9855 candidate rows, 0 HMM breaks | net 144 ms, features 37 ms, classifier 87 ms, HMM 296 ms
+2026-11-18 07:17:59 | INFO | predict trip=00000030: SCORE top1 HMM=0.9052 (classifier 0.8272) | continuity 1.0000 | route P=0.9736 R=0.9895 | miss=0.0000 | total 617 ms
+2026-11-18 07:17:59 | INFO | POST /predict from 127.0.0.1 -> 200 (638 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:18:00 | INFO | predict trip=00000049: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:18:01 | INFO | predict trip=00000049: 2642 GPS points, 47542 arcs, 17615 candidate rows, 0 HMM breaks | net 333 ms, features 47 ms, classifier 129 ms, HMM 243 ms
+2026-11-18 07:18:01 | INFO | predict trip=00000049: SCORE top1 HMM=0.9977 (classifier 0.9932) | continuity 1.0000 | route P=1.0000 R=0.9988 | miss=0.0000 | total 852 ms
+2026-11-18 07:18:01 | INFO | POST /predict from 127.0.0.1 -> 200 (874 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:18:02 | INFO | predict trip=00000059: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:18:03 | INFO | predict trip=00000059: 1031 GPS points, 24024 arcs, 14335 candidate rows, 0 HMM breaks | net 162 ms, features 42 ms, classifier 108 ms, HMM 398 ms
+2026-11-18 07:18:03 | INFO | predict trip=00000059: SCORE top1 HMM=0.9825 (classifier 0.9641) | continuity 1.0000 | route P=0.9952 R=1.0000 | miss=0.0010 | total 787 ms
+2026-11-18 07:18:03 | INFO | POST /predict from 127.0.0.1 -> 200 (820 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:18:04 | INFO | predict trip=00000067: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:18:04 | INFO | predict trip=00000067: 916 GPS points, 4485 arcs, 9023 candidate rows, 0 HMM breaks | net 38 ms, features 21 ms, classifier 71 ms, HMM 159 ms
+2026-11-18 07:18:04 | INFO | predict trip=00000067: SCORE top1 HMM=0.9410 (classifier 0.9651) | continuity 0.9989 | route P=1.0000 R=0.9523 | miss=0.0000 | total 320 ms
+2026-11-18 07:18:04 | INFO | POST /predict from 127.0.0.1 -> 200 (332 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:18:05 | INFO | predict trip=00000073: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:18:06 | INFO | predict trip=00000073: 1144 GPS points, 25631 arcs, 13713 candidate rows, 3 HMM breaks | net 254 ms, features 32 ms, classifier 80 ms, HMM 407 ms
+2026-11-18 07:18:06 | INFO | predict trip=00000073: SCORE top1 HMM=0.9869 (classifier 0.9843) | continuity 1.0000 | route P=0.9963 R=1.0000 | miss=0.0000 | total 818 ms
+2026-11-18 07:18:06 | INFO | POST /predict from 127.0.0.1 -> 200 (832 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:18:07 | INFO | predict trip=00000087: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:18:09 | INFO | predict trip=00000087: 1399 GPS points, 107451 arcs, 15614 candidate rows, 0 HMM breaks | net 845 ms, features 65 ms, classifier 104 ms, HMM 247 ms
+2026-11-18 07:18:09 | INFO | predict trip=00000087: SCORE top1 HMM=0.9986 (classifier 0.9664) | continuity 1.0000 | route P=1.0000 R=0.9954 | miss=0.0000 | total 1388 ms
+2026-11-18 07:18:09 | INFO | POST /predict from 127.0.0.1 -> 200 (1414 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+2026-11-18 07:18:10 | INFO | predict trip=00000094: loading GPS track + road network (reference route NOT loaded)
+2026-11-18 07:18:11 | INFO | predict trip=00000094: 3230 GPS points, 14931 arcs, 38286 candidate rows, 0 HMM breaks | net 102 ms, features 94 ms, classifier 305 ms, HMM 578 ms
+2026-11-18 07:18:11 | INFO | predict trip=00000094: SCORE top1 HMM=0.9650 (classifier 0.9446) | continuity 0.9997 | route P=0.9892 R=1.0000 | miss=0.0000 | total 1340 ms
+2026-11-18 07:18:11 | INFO | POST /predict from 127.0.0.1 -> 200 (1385 ms)
+INFO:     127.0.0.1:57010 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-11-18 07:18:13 | INFO | PathSnap API shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1633]
