@@ -36,6 +36,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from pathsnap.io import load_trip
@@ -100,6 +102,16 @@ async def access_log(request: Request, call_next):
                  request.client.host if request.client else "?", response.status_code,
                  1000 * (time.perf_counter() - t0))
     return response
+
+
+# Optional: the same UI served by the API itself at /ui (single-machine fallback / preview).
+# The normal two-laptop setup serves ui/ from Laptop 2 with ui/serve.py.
+app.mount("/ui", StaticFiles(directory=os.path.join(ROOT, "ui"), html=True), name="ui")
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse("/ui/")
 
 
 class PredictRequest(BaseModel):

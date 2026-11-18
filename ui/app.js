@@ -9,6 +9,7 @@
   function defaultApi() {
     const q = new URLSearchParams(location.search).get("api");
     if (q) return q;
+    if (location.pathname.startsWith("/ui")) return location.origin;  // UI served by the API itself
     if (window.PATHSNAP_API_URL) return window.PATHSNAP_API_URL;
     return `${location.protocol === "https:" ? "https" : "http"}://${location.hostname || "localhost"}:8000`;
   }
