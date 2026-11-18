@@ -109,6 +109,17 @@ directly from disk. The UI lists the trips from `GET /trips`, sends the selected
 route with a legend, along with the metrics. Leaflet is bundled in `ui/vendor/`, so the UI works
 offline. The basemap tiles need internet; without it, only the basemap is missing.
 
+### Showing several trip sets side by side (optional)
+
+To show the evaluator trips and the student-test trips in two separate lists in the UI, start the API with `EVAL_DIRS` (name=folder pairs, comma-separated; the first one is the default):
+
+```bash
+export EVAL_DIRS="evaluator=data/eval,student_test=data/raw/student_test"      # Windows: set EVAL_DIRS=evaluator=data\eval,student_test=data\raw\student_test
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+```
+
+`GET /datasets` returns the trip IDs per set; `POST /predict` takes an optional `"dataset"`. Without `EVAL_DIRS` the API serves `EVAL_DIR` only, as before.
+
 ### Evaluator trips
 
 The evaluator trips were run with the frozen system (no retraining or tuning):

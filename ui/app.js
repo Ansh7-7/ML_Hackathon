@@ -57,30 +57,50 @@
       const h = await getJSON("/health");
       $("apiStatus").textContent = `connected - ${h.model}`; $("apiStatus").className = "pill ok";
       logLine(`GET /health -> ok (model ${h.model}, ${h.n_trips} trips)`);
-      const t = await getJSON("/trips");
-      logLine(`GET /trips -> ${t.trips.length} trip ids`);
+      // several named datasets (EVAL_DIRS) if the API offers /datasets, otherwise the single /trips list
+      let groups;
+      try {
+        groups = (await getJSON("/datasets")).datasets;
+        logLine(`GET /datasets -> ${groups.map((g) => `${g.name}: ${g.trips.length}`).join(", ")} trip ids`);
+      } catch (e) {
+        const t = await getJSON("/trips");
+        groups = [{ name: null, trips: t.trips }];
+        logLine(`GET /trips -> ${t.trips.length} trip ids`);
+      }
       const box = $("tripList"); box.innerHTML = "";
-      t.trips.forEach((id) => {
-        const b = document.createElement("button");
-        b.textContent = id; b.dataset.trip = id;
-        b.onclick = () => runTrip(id);
-        box.appendChild(b);
+      groups.forEach((g) => {
+        if (groups.length > 1) {
+          const h = document.createElement("div");
+          h.className = "dsname"; h.textContent = `${g.name.replace(/_/g, " ")} (${g.trips.length} trips)`;
+          box.appendChild(h);
+        }
+        const grid = document.createElement("div"); grid.className = "trips";
+        g.trips.forEach((id) => {
+          const b = document.createElement("button");
+          b.textContent = id; b.dataset.trip = id; b.dataset.ds = g.name || "";
+          b.onclick = () => runTrip(id, g.name);
+          grid.appendChild(b);
+        });
+        if (!g.trips.length) grid.innerHTML = "<em>No trips in this folder (check EVAL_DIR).</em>";
+        box.appendChild(grid);
       });
-      if (!t.trips.length) box.innerHTML = "<em>The API has no trips in EVAL_DIR.</em>";
+      if (!groups.some((g) => g.trips.length)) box.innerHTML = "<em>The API has no trips in EVAL_DIR.</em>";
     } catch (e) {
       $("apiStatus").textContent = "connection failed"; $("apiStatus").className = "pill err";
       logLine(`connection error: ${e.message}`);
     }
   }
 
-  async function runTrip(id) {
-    document.querySelectorAll(".trips button").forEach((b) => { b.classList.toggle("active", b.dataset.trip === id); b.disabled = true; });
+  async function runTrip(id, ds) {
+    document.querySelectorAll(".trips button").forEach((b) => {
+      b.classList.toggle("active", b.dataset.trip === id && b.dataset.ds === (ds || "")); b.disabled = true; });
     $("busy").classList.remove("hidden");
     const t0 = performance.now();
     try {
-      logLine(`POST /predict {"trip_id": "${id}"}`);
+      const body = ds ? { trip_id: id, dataset: ds } : { trip_id: id };
+      logLine(`POST /predict ${JSON.stringify(body)}`);
       const r = await getJSON("/predict", { method: "POST", headers: { "Content-Type": "application/json" },
-                                            body: JSON.stringify({ trip_id: id }) });
+                                            body: JSON.stringify(body) });
       const rt = performance.now() - t0;
       logLine(`  <- ${r.n_points} points, ${r.predicted_route.length} route polyline(s), ${(rt / 1000).toFixed(2)} s round trip`);
       draw(r); showMetrics(r, rt);
@@ -106,7 +126,7 @@
 
   const pct = (v) => (v === null || v === undefined ? "n/a" : (100 * v).toFixed(2) + " %");
   function showMetrics(r, rt) {
-    $("tripLabel").textContent = `- trip ${r.trip_id}`;
+    $("tripLabel").textContent = `- trip ${r.trip_id}` + (r.dataset ? ` (${r.dataset.replace(/_/g, " ")})` : "");
     const m = r.metrics;
     let html = `<div class="kv"><span>GPS points</span><b>${r.n_points}</b><span>Model</span><b>${r.model} + HMM/Viterbi</b>
       <span>HMM chain breaks</span><b>${r.hmm_breaks.length}</b></div>`;

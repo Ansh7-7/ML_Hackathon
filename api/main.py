@@ -7,12 +7,15 @@ Environment variables
                  (<EVAL_DIR>/<trip_id>/<trip_id>.track|.nodes|.arcs[|.route]).
                  Default: data/raw/student_test (development stand-in for the
                  evaluator trips, which are not part of the dataset we were given).
+  EVAL_DIRS      optional, several named trip folders shown side by side in the UI,
+                 e.g. "evaluator=data/eval,student_test=data/raw/student_test" (first = default)
   ARTIFACTS_DIR  default: artifacts/  (model.joblib, feature_config.json, hmm_config.json)
   API_LOG_FILE   optional path; request log is also appended there.
 
 Endpoints
   GET  /health   service status + loaded model
-  GET  /trips    {"trips": [trip ids]}  - ids only, no data, no labels
+  GET  /trips    {"trips": [trip ids]}  - ids only, no data, no labels (first dataset)
+  GET  /datasets {"datasets": [{"name": ..., "trips": [ids]}]} - ids per configured dataset
   POST /predict  {"trip_id": "..."} -> runs the full pipeline (network + candidates +
                  features + classifier + HMM/Viterbi) and returns the predicted segment
                  per GPS point, the predicted route as lat/lon polylines, the GPS
@@ -38,6 +41,8 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from typing import Optional
+
 from pydantic import BaseModel
 
 from pathsnap.io import load_trip
@@ -45,6 +50,28 @@ from pathsnap.maps import _chain
 from pathsnap.pipeline import Artifacts, predict_trip, score_prediction
 
 EVAL_DIR = os.path.abspath(os.environ.get("EVAL_DIR", os.path.join(ROOT, "data", "raw", "student_test")))
+NAME_RE = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
+
+
+def _parse_datasets():
+    """Optional EVAL_DIRS="name=path,name2=path2" serves several trip folders side by side
+    (e.g. evaluator=data/eval,student_test=data/raw/student_test). Without it there is one
+    dataset, EVAL_DIR. The first dataset is the default for /trips and /predict."""
+    spec = os.environ.get("EVAL_DIRS", "").strip()
+    if not spec:
+        return {"evaluation": EVAL_DIR}
+    out = {}
+    for part in spec.split(","):
+        name, _, path = part.partition("=")
+        name, path = name.strip(), path.strip()
+        if not NAME_RE.match(name) or not path:
+            raise SystemExit(f"EVAL_DIRS: bad entry {part!r} (expected name=path)")
+        out[name] = os.path.abspath(path)
+    return out
+
+
+DATASETS = _parse_datasets()
+EVAL_DIR = next(iter(DATASETS.values()))
 ART_DIR = os.path.abspath(os.environ.get("ARTIFACTS_DIR", os.path.join(ROOT, "artifacts")))
 
 log = logging.getLogger("pathsnap.api")
@@ -59,11 +86,15 @@ ART = Artifacts(ART_DIR)
 TRIP_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
-def list_eval_trips():
-    if not os.path.isdir(EVAL_DIR):
+def list_trips_in(folder):
+    if not os.path.isdir(folder):
         return []
-    return sorted(d for d in os.listdir(EVAL_DIR)
-                  if TRIP_RE.match(d) and os.path.isfile(os.path.join(EVAL_DIR, d, f"{d}.track")))
+    return sorted(d for d in os.listdir(folder)
+                  if TRIP_RE.match(d) and os.path.isfile(os.path.join(folder, d, f"{d}.track")))
+
+
+def list_eval_trips():
+    return list_trips_in(EVAL_DIR)
 
 
 def _startup():
@@ -77,7 +108,8 @@ def _startup():
     log.info("feature config: radius=%.0f m, k_max=%d | HMM: beta=%g, w=%g, top_k=%d, back_tol=%g m",
              ART.fcfg.radius_m, ART.fcfg.k_max, ART.hcfg.beta, ART.hcfg.emission_weight, ART.hcfg.top_k,
              ART.hcfg.back_tol_m)
-    log.info("EVAL_DIR=%s  (%d trips)", EVAL_DIR, len(list_eval_trips()))
+    for name, folder in DATASETS.items():
+        log.info("dataset %-14s EVAL_DIR=%s  (%d trips)", name, folder, len(list_trips_in(folder)))
     log.info("=" * 78)
 
 
@@ -116,6 +148,7 @@ def root():
 
 class PredictRequest(BaseModel):
     trip_id: str
+    dataset: Optional[str] = None   # name from /datasets; default = first dataset
 
 
 @app.get("/health")
@@ -129,15 +162,26 @@ def trips():
     return {"trips": list_eval_trips()}
 
 
+@app.get("/datasets")
+def datasets():
+    """Trip IDs per configured dataset (IDs only, no data, no labels)."""
+    return {"datasets": [{"name": n, "trips": list_trips_in(f)} for n, f in DATASETS.items()]}
+
+
 @app.post("/predict")
 def predict(req: PredictRequest):
     tid = req.trip_id.strip()
-    if not TRIP_RE.match(tid) or tid not in list_eval_trips():
-        log.warning("predict: unknown trip_id %r", tid)
+    ds = (req.dataset or next(iter(DATASETS))).strip()
+    if ds not in DATASETS:
+        log.warning("predict: unknown dataset %r", ds)
+        raise HTTPException(status_code=404, detail=f"unknown dataset {ds!r}")
+    ddir = DATASETS[ds]
+    if not TRIP_RE.match(tid) or tid not in list_trips_in(ddir):
+        log.warning("predict: unknown trip_id %r in dataset %s", tid, ds)
         raise HTTPException(status_code=404, detail=f"unknown trip_id {tid!r}")
     t_all = time.perf_counter()
-    root, part = os.path.dirname(EVAL_DIR), os.path.basename(EVAL_DIR)
-    log.info("predict trip=%s: loading GPS track + road network (reference route NOT loaded)", tid)
+    root, part = os.path.dirname(ddir), os.path.basename(ddir)
+    log.info("predict trip=%s [%s]: loading GPS track + road network (reference route NOT loaded)", tid, ds)
     t0 = time.perf_counter()
     trip = load_trip(part, tid, root=root, with_route=False)
     t_load = 1000 * (time.perf_counter() - t0)
@@ -150,7 +194,7 @@ def predict(req: PredictRequest):
              tm["classifier_ms"], tm["hmm_ms"])
     # ---- server-side scoring (after prediction)
     t0 = time.perf_counter()
-    ref_path = os.path.join(EVAL_DIR, tid, f"{tid}.route")
+    ref_path = os.path.join(ddir, tid, f"{tid}.route")
     metrics = None
     if os.path.isfile(ref_path):
         route = load_trip(part, tid, root=root, with_route=True).route
@@ -169,6 +213,7 @@ def predict(req: PredictRequest):
     r6 = lambda lines: [[[round(a, 6), round(b, 6)] for a, b in ln] for ln in lines]
     return {
         "trip_id": tid,
+        "dataset": ds,
         "n_points": pred["n_points"],
         "model": ART.model_name,
         "gps_points": [[round(float(a), 6), round(float(b), 6)] for a, b in zip(lat, lon)],

@@ -41,3 +41,15 @@ def test_predict_all_trips():
         assert not forbidden & set(j), tid
         if j["metrics"] is not None:
             assert 0 <= j["metrics"]["hmm"]["top1_accuracy"] <= 1
+
+
+def test_datasets_ids_only_and_predict_per_dataset():
+    from api.main import DATASETS
+    r = client.get("/datasets").json()
+    assert set(r) == {"datasets"} and [d["name"] for d in r["datasets"]] == list(DATASETS)
+    for d in r["datasets"]:
+        assert set(d) == {"name", "trips"} and all(isinstance(t, str) for t in d["trips"])
+        if d["trips"]:
+            j = client.post("/predict", json={"trip_id": d["trips"][0], "dataset": d["name"]}).json()
+            assert j["dataset"] == d["name"] and j["n_points"] == len(j["gps_points"])
+    assert client.post("/predict", json={"trip_id": r["datasets"][0]["trips"][0], "dataset": "nope"}).status_code == 404
