@@ -767,7 +767,7 @@ def sec8(O, A, rj):
     st += [P("Appendix - reproduction", "h1"),
            P("pip install -r requirements.txt; place data in data/raw/{train,student_test}; then run in order: "
              "scripts/01_eda.py, 02_build_dataset.py, 03_train_compare.py, 03b_plot_compare.py, 03c_error_analysis.py, "
-             "03d_paired_comparison.py, 04_bayes_opt.py --trials 40, 05_hmm_eval.py, 05b_hmm_error_analysis.py, 07_maps.py, 08_screenshots.py, "
+             "03d_paired_comparison.py, 04_bayes_opt.py --trials 40, 04b_hpo_plots.py, 05_hmm_eval.py, 05b_hmm_error_analysis.py, 07_maps.py, 08_screenshots.py, "
              "report/build_report.py, scripts/check_report_numbers.py. Logs of the runs used for this report are in "
              "outputs/logs/. Seeds: 42 (numpy, scikit-learn, LightGBM, XGBoost, Optuna).", "small")]
     return st

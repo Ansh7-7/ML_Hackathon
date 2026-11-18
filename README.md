@@ -56,6 +56,7 @@ Times are from a 4-core laptop-class CPU.
 | 3c | `python scripts/03c_error_analysis.py` | Top-1 error types per model (reverse direction / adjacent / other / missed) | student_test | ~1 min |
 | 3d | `python scripts/03d_paired_comparison.py` | paired per-fold / per-trip comparison of the selected model vs every other (bootstrap CI) | train (CV), student_test | seconds |
 | 4 | `python scripts/04_bayes_opt.py --trials 40` | Optuna TPE on the selected model (objective CV Top-1, train only), tuned vs untuned, `artifacts/model.joblib` | train (search), student_test (after search) | ~30–60 min |
+| 4b | `python scripts/04b_hpo_plots.py` | HPO history + importance plots (PED-ANOVA and fANOVA), rebuilt from `trials.csv` without re-running the search | train | seconds |
 | 5 | `python scripts/05_hmm_eval.py` | HMM decoder grid (selection on train OOF), classifier-only vs HMM, `artifacts/hmm_config.json` | train, student_test | ~20 min |
 | 5b | `python scripts/05b_hmm_error_analysis.py` | what the HMM fixed and broke (error type, stationary, near breaks) | train, student_test | ~2 min |
 | 7 | `python scripts/07_maps.py` | Folium HTML maps and PNG screenshots | train (EDA maps), student_test | ~2 min |
@@ -64,7 +65,7 @@ Times are from a 4-core laptop-class CPU.
 | – | `python scripts/check_report_numbers.py` | cross-checks every decimal number in the PDF against `outputs/` (prints its own chance-match rate) | – | seconds |
 | – | `pytest -q tests/test_api.py` | API contract: all trips predict, IDs only, no reference data in responses | EVAL_DIR | ~1 min |
 
-`scripts/03_train_compare.py --models XGBoost LightGBM` re-runs selected models only. Results per model
+Steps 3c, 3d, 4b and 5b are short analysis scripts that read the results of the step before them. `scripts/03_train_compare.py --models XGBoost LightGBM` re-runs selected models only. Results per model
 are cached in `outputs/models/per_model/`; use `--force` to recompute.
 
 Without internet access (no CDN or map tiles), add `--offline-assets` to step 7. Leaflet is then
@@ -105,6 +106,12 @@ directly from disk. The UI lists the trips from `GET /trips`, sends the selected
 `POST /predict`, and draws the GPS points, the predicted route (HMM) and the classifier-only
 route with a legend, along with the metrics. Leaflet is bundled in `ui/vendor/`, so the UI works
 offline. The basemap tiles need internet; without it, only the basemap is missing.
+
+### Screenshot of the API console (report section 7)
+
+`scripts/08_screenshots.py` captures the API's stdout to `outputs/screenshots/api_console.log` and renders it to a
+PNG. On demo day, also take a real screenshot of the CMD/terminal window on Laptop 1 while the UI is used, as the
+deliverables ask for it.
 
 ### Network and firewall notes
 
