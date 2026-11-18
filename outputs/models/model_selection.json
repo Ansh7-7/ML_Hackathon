@@ -1,0 +1,16 @@
+{
+  "primary_metric": "mean CV observation-level Top-1 accuracy (GroupKFold by trip, train partition)",
+  "tie_break": "models within one fold-std of the best CV Top-1 are ranked by CV log loss, then inference time",
+  "best_cv_top1_model": "RandomForest",
+  "best_cv_top1": 0.9020342150427648,
+  "fold_std_of_best": 0.020082409956718707,
+  "contenders": [
+    "XGBoost",
+    "RandomForest",
+    "LightGBM",
+    "ExtraTrees",
+    "MLP",
+    "HistGradientBoosting"
+  ],
+  "chosen": "XGBoost"
+}

@@ -1,0 +1,66 @@
+{
+  "model": "MLP",
+  "family": "Neural network",
+  "params": {
+    "hidden_layer_sizes": [
+      64,
+      32
+    ],
+    "alpha": 0.0001,
+    "learning_rate_init": 0.001,
+    "batch_size": 1024,
+    "max_epochs": 30,
+    "patience": 5,
+    "val_frac": 0.15,
+    "random_state": 42
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.88817535753388,
+  "cv_top1_std": 0.021735639601256157,
+  "cv_macro_f1_mean": 0.9339849247640422,
+  "cv_macro_f1_std": 0.011034371324106411,
+  "cv_log_loss_mean": 0.06191542954809961,
+  "cv_log_loss_std": 0.009984875219358811,
+  "cv_precision_pos": 0.8996755633056057,
+  "cv_recall_pos": 0.863147002024592,
+  "train_macro_f1_mean": 0.9421088400104793,
+  "train_log_loss_mean": 0.0544818916538413,
+  "cv_fit_s_mean": 13.377657461166383,
+  "st_top1": 0.8837682672233821,
+  "st_macro_f1": 0.9307315096721418,
+  "st_log_loss": 0.0542952897410222,
+  "st_accuracy": 0.9774594006675918,
+  "st_precision_pos": 0.8774305738525584,
+  "st_recall_pos": 0.8702764856530602,
+  "st_f1_pos": 0.8738388874311205,
+  "st_precision_macro": 0.932329143981655,
+  "st_recall_macro": 0.92914867692843,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9388079613582533,
+  "st_confusion_matrix": [
+    [
+      191845,
+      2326
+    ],
+    [
+      2482,
+      16651
+    ]
+  ],
+  "final_fit_s": 25.435264587402344,
+  "final_fit_rows": 606345,
+  "st_inference_s": 0.05377483367919922,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 2.806619711857997,
+  "final_best_epoch": 30,
+  "cv_best_epochs": [
+    21,
+    8,
+    9,
+    16,
+    15
+  ]
+}

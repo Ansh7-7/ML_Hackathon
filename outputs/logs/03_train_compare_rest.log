@@ -24,3 +24,20 @@ train rows 1,817,673 (fit rows with stride 3: 606,345), student_test rows 213,30
 [ExtraTrees] fold 4: val top1=0.9222 macroF1=0.9514 logloss=0.0431 | train macroF1=0.9595 | fit 25s
 [ExtraTrees] CV top1=0.8934±0.0218 CV macroF1=0.9388 | ST top1=0.8857 macroF1=0.9327 logloss=0.0517 cont=0.9302 | fit 33s inf 1.84s
 [RandomForest] fold 0: val top1=0.8764 macroF1=0.9313 logloss=0.0576 | train macroF1=0.9767 | fit 101s
+[RandomForest] fold 1: val top1=0.8966 macroF1=0.9491 logloss=0.0628 | train macroF1=0.9759 | fit 85s
+[RandomForest] fold 2: val top1=0.8979 macroF1=0.9437 logloss=0.0602 | train macroF1=0.9753 | fit 103s
+[RandomForest] fold 3: val top1=0.9075 macroF1=0.9446 logloss=0.0476 | train macroF1=0.9752 | fit 98s
+[RandomForest] fold 4: val top1=0.9317 macroF1=0.9590 logloss=0.0380 | train macroF1=0.9748 | fit 98s
+[RandomForest] CV top1=0.9020±0.0201 CV macroF1=0.9456 | ST top1=0.8941 macroF1=0.9398 logloss=0.0482 cont=0.9338 | fit 130s inf 0.84s
+[MLP] fold 0: val top1=0.8571 macroF1=0.9180 logloss=0.0674 | train macroF1=0.9483 | fit 19s
+[MLP] fold 1: val top1=0.8874 macroF1=0.9390 logloss=0.0682 | train macroF1=0.9370 | fit 9s
+[MLP] fold 2: val top1=0.8825 macroF1=0.9307 logloss=0.0709 | train macroF1=0.9393 | fit 9s
+[MLP] fold 3: val top1=0.8973 macroF1=0.9344 logloss=0.0557 | train macroF1=0.9426 | fit 15s
+[MLP] fold 4: val top1=0.9166 macroF1=0.9479 logloss=0.0474 | train macroF1=0.9432 | fit 14s
+[MLP] CV top1=0.8882±0.0217 CV macroF1=0.9340 | ST top1=0.8838 macroF1=0.9307 logloss=0.0543 cont=0.9388 | fit 25s inf 0.05s
+[KNN] fold 0: val top1=0.8321 macroF1=0.8969 logloss=0.1054 | train macroF1=0.9669 | fit 0s
+[KNN] fold 1: val top1=0.8764 macroF1=0.9298 logloss=0.1201 | train macroF1=0.9641 | fit 0s
+[KNN] fold 2: val top1=0.8752 macroF1=0.9147 logloss=0.1221 | train macroF1=0.9637 | fit 0s
+[KNN] fold 3: val top1=0.8676 macroF1=0.9097 logloss=0.0929 | train macroF1=0.9653 | fit 0s
+[KNN] fold 4: val top1=0.8957 macroF1=0.9314 logloss=0.0746 | train macroF1=0.9650 | fit 0s
+[KNN] CV top1=0.8694±0.0233 CV macroF1=0.9165 | ST top1=0.8687 macroF1=0.9196 logloss=0.0824 cont=0.9275 | fit 0s inf 28.35s

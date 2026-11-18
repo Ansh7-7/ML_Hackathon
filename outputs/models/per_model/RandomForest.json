@@ -1,0 +1,52 @@
+{
+  "model": "RandomForest",
+  "family": "Tree ensemble (bagging)",
+  "params": {
+    "n_estimators": 200,
+    "min_samples_leaf": 5,
+    "max_features": "sqrt",
+    "n_jobs": 4,
+    "random_state": 42
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.9020342150427648,
+  "cv_top1_std": 0.020082409956718707,
+  "cv_macro_f1_mean": 0.9455552627624794,
+  "cv_macro_f1_std": 0.010021969168699182,
+  "cv_log_loss_mean": 0.05323891068242116,
+  "cv_log_loss_std": 0.010282979816411202,
+  "cv_precision_pos": 0.9168696762170339,
+  "cv_recall_pos": 0.8869573149699692,
+  "train_macro_f1_mean": 0.9755569553170649,
+  "train_log_loss_mean": 0.02693626405727533,
+  "cv_fit_s_mean": 96.62259922027587,
+  "st_top1": 0.8940501043841336,
+  "st_macro_f1": 0.9397680633784269,
+  "st_log_loss": 0.04819082974237225,
+  "st_accuracy": 0.9806192101413944,
+  "st_precision_pos": 0.9052688462577682,
+  "st_recall_pos": 0.8755553232634715,
+  "st_f1_pos": 0.8901641957596047,
+  "st_precision_macro": 0.9465229954521506,
+  "st_recall_macro": 0.9332635992846293,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9337942049094106,
+  "st_confusion_matrix": [
+    [
+      192418,
+      1753
+    ],
+    [
+      2381,
+      16752
+    ]
+  ],
+  "final_fit_s": 130.25681042671204,
+  "final_fit_rows": 606345,
+  "st_inference_s": 0.8439979553222656,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 44.0499976681767
+}

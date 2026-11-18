@@ -1,0 +1,50 @@
+{
+  "model": "KNN",
+  "family": "Instance-based",
+  "params": {
+    "n_neighbors": 25,
+    "weights": "distance",
+    "n_jobs": 4
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": 150000,
+  "cv_top1_mean": 0.8694027362301723,
+  "cv_top1_std": 0.02329189883980905,
+  "cv_macro_f1_mean": 0.916519239581417,
+  "cv_macro_f1_std": 0.014417778841199737,
+  "cv_log_loss_mean": 0.10305294477873186,
+  "cv_log_loss_std": 0.019832853963563792,
+  "cv_precision_pos": 0.8763276556829573,
+  "cv_recall_pos": 0.8233436425406,
+  "train_macro_f1_mean": 0.9649932443336559,
+  "train_log_loss_mean": 0.039545638732528046,
+  "cv_fit_s_mean": 0.16817812919616698,
+  "st_top1": 0.8686847599164927,
+  "st_macro_f1": 0.9196356190440553,
+  "st_log_loss": 0.08242730961277099,
+  "st_accuracy": 0.9744121066646664,
+  "st_precision_pos": 0.8784105373844706,
+  "st_recall_pos": 0.8295614906183034,
+  "st_f1_pos": 0.8532874576635665,
+  "st_precision_macro": 0.9308537948274058,
+  "st_recall_macro": 0.9091233608387622,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9274770304588226,
+  "st_confusion_matrix": [
+    [
+      191974,
+      2197
+    ],
+    [
+      3261,
+      15872
+    ]
+  ],
+  "final_fit_s": 0.17783808708190918,
+  "final_fit_rows": 150000,
+  "st_inference_s": 28.353280544281006,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 1479.8163123319941
+}
