@@ -18,9 +18,29 @@ from .features import FEATURES, FeatureConfig, build_features, prepare_trip, ref
 from .hmm import HMMConfig, decode_trip
 
 
+def load_model_bundle(art_dir):
+    """Load artifacts/model.joblib; if the pickle cannot be read on this platform
+    (pickled XGBoost boosters are not always portable, e.g. Linux -> Windows),
+    fall back to the portable XGBoost JSON export model_xgb.json + model_meta.json,
+    which contains the same booster and gives identical predictions."""
+    try:
+        return joblib.load(os.path.join(art_dir, "model.joblib"))
+    except Exception as e:  # noqa: BLE001
+        jpath, mpath = os.path.join(art_dir, "model_xgb.json"), os.path.join(art_dir, "model_meta.json")
+        if not (os.path.isfile(jpath) and os.path.isfile(mpath)):
+            raise
+        from xgboost import XGBClassifier
+        meta = json.load(open(mpath))
+        model = XGBClassifier()
+        model.load_model(jpath)
+        print(f"[pathsnap] model.joblib could not be loaded ({type(e).__name__}: {e}); "
+              f"using the portable export {os.path.basename(jpath)}", flush=True)
+        return {**meta, "model": model}
+
+
 class Artifacts:
     def __init__(self, art_dir):
-        bundle = joblib.load(os.path.join(art_dir, "model.joblib"))
+        bundle = load_model_bundle(art_dir)
         self.model = bundle["model"]
         self.model_name = bundle["model_name"]
         self.tuned = bundle.get("tuned")
