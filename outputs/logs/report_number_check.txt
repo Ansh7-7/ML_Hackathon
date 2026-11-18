@@ -1,5 +1,5 @@
-report: /tmp/claude-0/-home-user/806451c9-5e7c-5f03-b275-43faba5af4fe/scratchpad/sec3.pdf
-result values indexed: 5,790 from 52 files
-decimal numbers checked: 465
+report: /home/user/work/PathSnap_handover/pathsnap/report/PathSnap_Technical_Report.pdf
+result values indexed: 8,717 from 67 files
+decimal numbers checked: 871
 unmatched: 0
-self-test - share of RANDOM numbers in [0,1] that would match some stored value by chance: 2 decimals 82.1%, 3 decimals 47.5%, 4 decimals 14.9% (the check is a safety net; the primary guarantee is that build_report.py reads every number from the files)
+self-test - share of RANDOM numbers in [0,1] that would match some stored value by chance: 2 decimals 94.2%, 3 decimals 57.0%, 4 decimals 21.6% (the check is a safety net; the primary guarantee is that build_report.py reads every number from the files)

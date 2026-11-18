@@ -208,13 +208,14 @@ joblib.dump({"model": final_model, "model_name": name, "tuned": bool(use_tuned),
 print("saved artifacts/model.joblib (tuned=%s)" % use_tuned)
 
 # ------------------------------------------------------------------ plots
+# (scripts/04b_hpo_plots.py rebuilds these from trials.csv, adds fANOVA, and is what the report uses)
 from optuna.visualization.matplotlib import plot_optimization_history, plot_param_importances
 ax = plot_optimization_history(study)
 ax.set_title(f"Optuna TPE optimisation history - {name} (objective: CV Top-1, train)")
 ax.figure.set_size_inches(8, 3.8); ax.figure.tight_layout()
 ax.figure.savefig(os.path.join(OUT, "optimisation_history.png"), dpi=130); plt.close(ax.figure)
 ax = plot_param_importances(study)
-ax.set_title(f"Hyperparameter importance (fANOVA) - {name}")
+ax.set_title(f"Hyperparameter importance (PED-ANOVA, Optuna default) - {name}")
 ax.figure.set_size_inches(7, 3.6); ax.figure.tight_layout()
 ax.figure.savefig(os.path.join(OUT, "param_importances.png"), dpi=130); plt.close(ax.figure)
 

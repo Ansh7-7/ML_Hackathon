@@ -18,8 +18,8 @@ Transition (Newson & Krumm 2009 style)
               beta_eff = beta * max(1, dt)^beta_dt_exp   (longer gaps -> looser)
     unreachable within cutoff = max(2*d_gc + slack, vmax*dt)  -> T = 0 (-inf).
     Backward movement along the same arc of up to back_tol_m is treated as GPS
-    jitter of a (nearly) stationary vehicle (distance 0) instead of requiring a
-    loop around the block; without this, stationary periods near a node pull the
+    jitter of a slow or stationary vehicle (distance 0) instead of requiring a
+    loop around the block; without this, slow stretches near a node pull the
     decoder onto the outgoing arc, where the projection is clamped at t = 0.
     A move onto the reverse twin of the same road (U-turn) gets an extra
     -uturn_penalty.

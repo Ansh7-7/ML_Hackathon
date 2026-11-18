@@ -1,0 +1,10 @@
+  hyperparameter  ped_anova  fanova_mean  fanova_std  rank_ped_anova  rank_fanova
+       max_depth      0.358        0.259       0.055               1            2
+colsample_bytree      0.298        0.063       0.013               2            4
+      reg_lambda      0.101        0.025       0.019               3            7
+   learning_rate      0.069        0.215       0.017               4            3
+    n_estimators      0.053        0.007       0.003               5            8
+           gamma      0.047        0.327       0.051               6            1
+       subsample      0.041        0.046       0.018               7            6
+min_child_weight      0.032        0.058       0.028               8            5
+pruned: 11 completed: 29 best: 28 0.9026

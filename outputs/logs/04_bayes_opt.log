@@ -28,3 +28,12 @@ trial 35: top1=0.9021 f1=0.9463 ll=0.0511 66s {'n_estimators': 489, 'learning_ra
 trial 36: top1=0.9021 f1=0.9464 ll=0.0507 86s {'n_estimators': 746, 'learning_rate': 0.014806844178164575, 'max_depth': 11, 'min_child_weight': 2.988090810118058, 'subsample': 0.6257586667458176, 'colsample_bytree': 0.6171246944187879, 'reg_lambda': 0.23216455312704026, 'gamma': 3.0715685145009157}
 trial 38: top1=0.9022 f1=0.9465 ll=0.0508 66s {'n_estimators': 517, 'learning_rate': 0.016672910463521765, 'max_depth': 10, 'min_child_weight': 1.3137336178168182, 'subsample': 0.5515093948343993, 'colsample_bytree': 0.6134309388848868, 'reg_lambda': 0.018146930397506325, 'gamma': 4.352957976715128}
 best trial 28: 0.9026 {'n_estimators': 839, 'learning_rate': 0.013272954739795942, 'max_depth': 10, 'min_child_weight': 3.5448583845763024, 'subsample': 0.6534079275996494, 'colsample_bytree': 0.5974142751161107, 'reg_lambda': 0.06181854100799379, 'gamma': 2.8488798707851766}; search took 44.5 min
+                       model  cv_macro_f1  cv_top1  cv_log_loss  st_top1  st_macro_f1  st_log_loss  st_route_continuity  train_time_s  inference_s  inference_ms_per_1000_obs
+0          XGBoost (untuned)       0.9458   0.9014       0.0514   0.9008       0.9407       0.0466               0.9380        7.5758       0.3013                    15.7277
+1  XGBoost (tuned, trial 28)       0.9466   0.9026       0.0506   0.8967       0.9404       0.0458               0.9357       19.6312       1.1310                    59.0292
+saved artifacts/model.joblib (tuned=True)
+/home/user/work/PathSnap_handover/pathsnap/scripts/04_bayes_opt.py:212: ExperimentalWarning: optuna.visualization.matplotlib._optimization_history.plot_optimization_history is experimental (supported from v2.2.0). The interface can change in the future.
+  ax = plot_optimization_history(study)
+/home/user/work/PathSnap_handover/pathsnap/scripts/04_bayes_opt.py:216: ExperimentalWarning: optuna.visualization.matplotlib._param_importances.plot_param_importances is experimental (supported from v2.2.0). The interface can change in the future.
+  ax = plot_param_importances(study)
+done

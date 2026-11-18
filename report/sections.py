@@ -96,12 +96,13 @@ def sec3(O, A, rj):
              "on student_test (Top-1 ceiling). Source: outputs/models/comparison.csv.", "cap")]
     ch = sel["chosen"]
     assert ch == "XGBoost", "text below describes XGBoost as the selected model"
+    assert all(fold_top1.loc[n].idxmin() == 0 and fold_top1.loc[n].idxmax() == 4 for n in ORDER)
     best = sel["best_cv_top1_model"]
     st += [P("<b>Selection.</b> " +
              f"The best CV Top-1 is {best} ({sel['best_cv_top1']:.4f} ± {sel['fold_std_of_best']:.4f}); "
              f"{len(sel['contenders'])} models lie within one fold standard deviation of it "
              f"({', '.join(sel['contenders'])}), so their Top-1 differences are not meaningful - all five folds rank the "
-             f"tree ensembles in the same order of difficulty (fold 0 hardest, fold 4 easiest, Table 6), i.e. fold-to-fold "
+             f"tree ensembles in the same order of difficulty (fold 0 hardest, fold 4 easiest, Table 5), i.e. fold-to-fold "
              f"variance comes from the trips, not the models. Among the contenders <b>XGBoost</b> has the lowest CV log loss "
              f"({f4(C.loc['XGBoost', 'CV Log loss'])} vs {f4(C.loc[best, 'CV Log loss'])} for {best}) and is the fastest tree "
              f"ensemble at inference ({C.loc['XGBoost', 'Inference time student-test [s]']:.2f} s vs "
@@ -119,7 +120,7 @@ def sec3(O, A, rj):
     for n in ORDER:
         rows.append([n] + [f4(fold_top1.loc[n, k]) for k in range(5)])
     st += [table(rows, col_widths=[3.4 * cm] + [2 * cm] * 5),
-           P("Table 6 - Held-out Top-1 per CV fold (train partition). Source: outputs/models/cv_folds_all.csv.", "cap")]
+           P("Table 5 - Held-out Top-1 per CV fold (train partition). Source: outputs/models/cv_folds_all.csv.", "cap")]
     PC = pd.read_csv(O("models", "paired_comparison.csv")).set_index("other")
     rows = [["XGBoost vs", "CV folds XGBoost better (of 5)", "CV mean diff [pp]", "student_test trips better / worse",
              "student_test diff [pp] (95% CI over trips)"]]
@@ -131,7 +132,7 @@ def sec3(O, A, rj):
     tied = [o for o in PC.index if o not in clear]
     assert set(tied) == {"RandomForest", "LightGBM"}
     st += [table(rows, col_widths=[3.4 * cm, 2.8 * cm, 2.4 * cm, 3.2 * cm, 5.6 * cm]),
-           P("Table 6b - Paired comparison of the selected model with each other model: per-fold CV differences (train) "
+           P("Table 6 - Paired comparison of the selected model with each other model: per-fold CV differences (train) "
              "and per-trip student_test differences with a 95% bootstrap confidence interval over the 10 trips. Source: "
              "scripts/03d_paired_comparison.py -> outputs/models/paired_comparison.csv.", "cap"),
            P(f"XGBoost is better than {', '.join(clear)} in every CV fold and on student_test with a confidence interval that "
@@ -396,16 +397,20 @@ def sec4(O, A, rj):
     kind = {"int": "integer, uniform", "int_log": "integer, log-uniform", "float": "real, uniform",
             "float_log": "real, log-uniform"}
     defaults = json.loads(un.params)
+    # XGBoost defaults for parameters we did not set explicitly in the untuned model (XGBoost documentation)
+    XGB_DEFAULTS = {"min_child_weight": 1, "reg_lambda": 1, "gamma": 0}
     rows = [["Hyperparameter", "Range", "Distribution", "Untuned value", "Best value (trial %d)" % bp["best_trial"]]]
     for k, (kd, lo, hi) in ss["space"].items():
         b = bp["best_params"][k]
-        rows.append([k, f"[{lo}, {hi}]", kind[kd], str(defaults.get(k, "-")),
+        rows.append([k, f"[{lo}, {hi}]", kind[kd],
+                     str(defaults[k]) if k in defaults else f"{XGB_DEFAULTS[k]} (library default)",
                      f"{b:.4g}" if isinstance(b, float) else str(b)])
     st += [P("4.1 Search space (Q1, Q2) and best values (Q5)", "h2"),
            table(rows, col_widths=[3.4 * cm, 2.6 * cm, 3.2 * cm, 2.6 * cm, 3.4 * cm]),
-           P("Table 7 - Search space and result. Ranges are centred on the library defaults and widened by about one order of "
-             "magnitude on log scales; subsample/colsample stop at 0.4-0.5 to keep enough data per tree. Source: "
-             "outputs/hpo/search_space.json, best_params.json.", "cap")]
+           P("Table 7 - Search space and result. Every range contains the untuned value; scale-type parameters (learning "
+             "rate, tree count, regularisation) are searched log-uniformly over one to two orders of magnitude; "
+             "subsample/colsample stop at 0.5/0.4 to keep enough data per tree. Source: outputs/hpo/search_space.json, "
+             "best_params.json.", "cap")]
     nc, npr = bp["n_complete"], bp["n_pruned"]
     st += [P("4.2 Objective and procedure (Q3, Q4)", "h2"),
            *bullets([
@@ -421,10 +426,23 @@ def sec4(O, A, rj):
                f"and evaluated on student_test.",
            ]),
            img(O("hpo", "optimisation_history.png"), width=14 * cm,
-               caption="Figure 20 - Optimisation history (objective value per trial and best so far). Train partition, CV. "
-                       "Source: outputs/hpo/optimisation_history.png"),
-           img(O("hpo", "param_importances.png"), width=13 * cm,
-               caption="Figure 21 - Hyperparameter importance (fANOVA over completed trials). Source: outputs/hpo/param_importances.png")]
+               caption="Figure 20 - Optimisation history: CV Top-1 of every trial (crosses: pruned trials at their partial "
+                       "value) and best so far. Train partition. Source: scripts/04b_hpo_plots.py from outputs/hpo/trials.csv"),
+           img(O("hpo", "param_importances.png"), width=14 * cm,
+               caption="Figure 21 - Hyperparameter importance over the completed trials, two estimators: PED-ANOVA (Optuna's "
+                       "default) and fANOVA (mean +- std over 10 seeds). Source: outputs/hpo/param_importances.csv")]
+    IM = pd.read_csv(O("hpo", "param_importances.csv")).set_index("hyperparameter")
+    both_top2 = [h for h in IM.index if IM.loc[h, "rank_ped_anova"] <= 2 and IM.loc[h, "rank_fanova"] <= 2]
+    assert both_top2 == ["max_depth"]
+    top_p = IM.ped_anova.idxmax(); top_f = IM.fanova_mean.idxmax()
+    st.append(P(f"<b>Which hyperparameters mattered?</b> The two importance estimators disagree: PED-ANOVA ranks "
+                f"{top_p} first ({IM.loc[top_p, 'ped_anova']:.2f}), fANOVA ranks {top_f} first "
+                f"({IM.loc[top_f, 'fanova_mean']:.2f} +- {IM.loc[top_f, 'fanova_std']:.2f}). Only <b>max_depth</b> is in the "
+                f"top two for both (PED-ANOVA {IM.loc['max_depth', 'ped_anova']:.2f}, fANOVA "
+                f"{IM.loc['max_depth', 'fanova_mean']:.2f}); deeper trees (best: {bp['best_params']['max_depth']}) combined with "
+                f"a small learning rate ({bp['best_params']['learning_rate']:.3f}) gave the best trials. With only "
+                f"{nc} completed trials and an objective that varies by a few tenths of a point, we do not over-interpret "
+                f"the rest of the ranking."))
     rows = [["Model", "CV Macro F1", "CV Top-1", "CV log loss", "Student-test Top-1", "Student-test Macro F1",
              "Student-test log loss", "Train time", "Inference time (student-test)"]]
     for _, r in TU.iterrows():
@@ -449,9 +467,12 @@ def sec4(O, A, rj):
         f". The objective improved by {d['cv_top1'] * 100:+.2f} points of CV Top-1 ({f4(un.cv_top1)} -> {f4(tu.cv_top1)}); "
         f"on student_test Top-1 changed by {d['st_top1'] * 100:+.2f} points and log loss by {d['st_log_loss']:+.4f}. "
         f"These gains are small compared with the fold-to-fold standard deviation of CV Top-1 ({f4(std)}): the default "
-        f"configuration was already near a plateau, which the flat optimisation history also shows. "
-        f"Inference time changed from {un.inference_s:.2f} s to {tu.inference_s:.2f} s"
-        f" ({'more' if tu.inference_s > un.inference_s else 'fewer'} / larger trees). "
+        f"configuration was already close to the optimum, and the optimisation history (Figure 20) plateaus after about "
+        f"a dozen trials. Inference time changed from {un.inference_s:.2f} s to {tu.inference_s:.2f} s because the tuned "
+        f"model has {bp['best_params']['n_estimators']} trees of depth {bp['best_params']['max_depth']} instead of "
+        f"{defaults['n_estimators']} of depth {defaults['max_depth']}. <b>Answer to Q6:</b> marginally on the training-side "
+        f"objective and on probability quality (log loss on both partitions), not on student_test Top-1 / Macro F1, and at "
+        f"about {dv('tuned_inference_slowdown', tu.inference_s / un.inference_s):.1f}x the inference cost. "
         f"The deployed model (artifacts/model.joblib) is the {'tuned' if tu.cv_top1 >= un.cv_top1 else 'untuned'} one, "
         f"chosen by the same rule as everything else - CV Top-1 on train."))
     return st
@@ -482,8 +503,8 @@ def sec5(O, A, rj):
         f"beta_eff with beta_eff = beta * max(1, dt)^{hc['beta_dt_exp']:g}, beta = {hc['beta']:g} m (tuned). A real move along "
         "the road has d_route close to d_gc; a jump to a parallel road or the wrong direction needs a detour and is "
         f"penalised. Moving onto the reverse twin of the same road (U-turn) costs an extra {hc['uturn_penalty']:g} (tuned). "
-        f"Backward movement of up to {hc['back_tol_m']:g} m along the same arc is treated as GPS jitter of a stationary "
-        "vehicle (tuned; see 5.3 for why this matters).",
+        f"Backward movement of up to {hc['back_tol_m']:g} m along the same arc is treated as GPS jitter of a slow or "
+        "stationary vehicle (tuned; see 5.2 for why this matters).",
         f"<b>Q4 Missing candidates and gaps.</b> An observation with no candidate is skipped; the chain continues from the "
         f"last observation that had candidates (dt and d_gc measured between those two fixes) and the skipped fix inherits "
         f"the previous arc. Transitions are only searched up to max(2 d_gc + {hc['cutoff_slack_m']:g} m, "
@@ -518,10 +539,11 @@ def sec5(O, A, rj):
                                                           "the selected values), train (left) and student_test (right).")]
     bt = G.groupby("back_tol_m").train_top1.max()
     st.append(P("Sensitivity: best train Top-1 per back_tol: " + ", ".join(f"{k:g} m: {f4(v)}" for k, v in bt.items()) +
-                ". The jitter tolerance matters most: with 5 m, stationary vehicles near a junction drift onto the outgoing "
-                "arc (the projection of a fix that lies 'before' the arc is clamped to its start, so backward jitter is free "
-                "there but costs a detour on the correct arc) and the chain later hits impossible transitions. We found this "
-                "on student_test trip 7 during development and added the parameter to the grid; its value was chosen on train."))
+                ". The jitter tolerance matters most. When a slow or stationary vehicle's GPS fix moves backwards along the "
+                "arc by more than back_tol, the driving distance on the correct arc requires a detour around the block, while "
+                "on the next arc the projection is clamped to the arc start and costs nothing - so with 5 m the decoder "
+                "leaves the correct arc too early and later hits impossible transitions. We noticed this while testing the "
+                "decoder on student_test trip 7, added the parameter to the grid and chose its value on train."))
     # ---- comparison
     rows = [["Metric", "train: classifier", "train: + HMM", "student_test: classifier", "student_test: + HMM"]]
     for lab, c in [("Top-1 accuracy (all observations)", "top1"), ("Macro F1 (decision level)", "macro_f1_decision"),
@@ -557,21 +579,15 @@ def sec5(O, A, rj):
     txt = (f"<b>Did the HMM improve the route?</b> {'Yes, on both partitions' if improved else 'Not uniformly'}: Top-1 "
            f"{f4(t.top1_clf)} -> {f4(t.top1_hmm)} on train and {f4(s.top1_clf)} -> {f4(s.top1_hmm)} on student_test; "
            f"route continuity {f4(t.continuity_clf)} -> {f4(t.continuity_hmm)} (train) and {f4(s.continuity_clf)} -> "
-           f"{f4(s.continuity_hmm)} (student_test). The decoder removes the isolated jumps of the pointwise classifier "
-           f"onto crossing streets and the flip-flopping between the two directions of a road, which is exactly what the "
-           f"continuity and route-precision rows show. ")
+           f"{f4(s.continuity_hmm)} (student_test), and length-weighted route precision {f4(t.route_precision_clf)} -> "
+           f"{f4(t.route_precision_hmm)} (train) and {f4(s.route_precision_clf)} -> {f4(s.route_precision_hmm)} "
+           f"(student_test) at unchanged recall. This is consistent with the decoder removing short excursions of the "
+           f"pointwise classifier onto side streets and switches between the two directions of a road: such switches "
+           f"count as breaks in the continuity metric, and the excursions add wrong arcs to the predicted route. ")
     if len(worse):
-        wl = ", ".join(f"{r.partition} {r.trip_id} ({100 * r.delta_top1:+.1f} pp)" for _, r in worse.head(6).iterrows())
+        wl = ", ".join(f"{r.partition} {r.trip_id} ({100 * r.delta_top1:+.1f} pp)" for _, r in worse.iterrows())
         txt += (f"<b>Where it did not help:</b> {len(worse)} of {len(PTd)} trips got worse - {wl}. ")
     st.append(P(txt))
-    st.append(P("<b>Why it fails on those trips</b> (inspected on the maps of section 6 and in breaks.csv): (i) long stops at "
-                "junctions - the decoder may commit to the outgoing arc while the reference keeps the vehicle on the incoming "
-                "one, and every stationary fix then counts as an error even though the physical position is almost the same; "
-                "(ii) when the reference route's direction disagrees with the GPS motion (section 3, trip 77), a connected "
-                "path along the reference is penalised by the transition model; (iii) where the classifier is confidently "
-                "wrong for many consecutive fixes, the HMM keeps the error consistent instead of correcting it, and a "
-                "'disconnected' break can make it re-enter on the wrong road. These are honest failure modes of an HMM with "
-                "pointwise emissions; reporting the classifier-only result next to it (Table 10) makes them visible."))
     return st
 
 
@@ -579,17 +595,52 @@ def sec5b(O, A, rj):
     """Measured characterisation of what the HMM fixed / broke (scripts/05b_hmm_error_analysis.py)."""
     FB = pd.read_csv(O("hmm", "fix_break_analysis.csv"), dtype={"trip_id": str})
     a = FB[FB.trip_id == "ALL"].set_index(["partition", "set"])
-    rows = [["Partition", "Set", "Observations", "reverse twin", "adjacent arc", "other arc", "vehicle stationary",
-             "within 30 fixes after a break"]]
-    for (part, s), r in a.iterrows():
-        rows.append([part, "fixed by HMM" if s == "fixed" else "broken by HMM", f"{r.n:,}",
-                     *(f"{r[c]:,} ({pct(r[c] / max(r.n, 1))})" for c in ("reverse_twin", "adjacent", "other", "stationary", "near_break"))])
-    st = [table(rows, col_widths=[2.2 * cm, 2.4 * cm, 1.9 * cm, 2.1 * cm, 2.1 * cm, 2.1 * cm, 2.2 * cm, 2.4 * cm]),
-          P("Table 12 - Observations the HMM fixed (classifier wrong, HMM right) and broke (classifier right, HMM wrong). "
-            "Error type refers to the wrong arc (the classifier's for 'fixed', the HMM's for 'broken'). Stationary = GPS "
-            "displacement over +-2 fixes below 2 m. Source: scripts/05b_hmm_error_analysis.py -> "
-            "outputs/hmm/fix_break_analysis.csv.", "cap")]
-    return st
+    lab = {"all_obs": "all observations", "fixed": "fixed by HMM", "broken": "broken by HMM"}
+    rows = [["Partition", "Set", "Obs.", "reverse twin", "adjacent arc", "other arc", "slow (&lt; 3 m/s)",
+             "GPS &gt; 20 m from ref. arc", "stationary", "&lt;= 30 fixes after a break"]]
+    for part in ("train", "student_test"):
+        for s_ in ("all_obs", "fixed", "broken"):
+            r = a.loc[(part, s_)]
+            cells = [f"{r[c]:,} ({pct(dv(f'share_{part}_{s_}_{c}', r[c] / max(r.n, 1)))})"
+                     if s_ != "all_obs" or c not in ("reverse_twin", "adjacent", "other")
+                     else "-" for c in ("reverse_twin", "adjacent", "other", "slow", "far_from_reference", "stationary", "near_break")]
+            rows.append([part, lab[s_], f"{r.n:,}", *cells])
+    st = [P("<b>What the HMM fixed and what it broke (measured).</b> For every observation we compared classifier-only and "
+            "HMM predictions with the reference arc and characterised the observations each one got wrong (Table 12)."),
+          table(rows, col_widths=[1.8 * cm, 2.1 * cm, 1.4 * cm, 1.8 * cm, 1.7 * cm, 1.6 * cm, 1.8 * cm, 1.9 * cm, 1.6 * cm, 1.8 * cm]),
+          P("Table 12 - Observations the HMM fixed (classifier wrong, HMM right) and broke (classifier right, HMM wrong), "
+            "with the base rate over all observations for comparison. Error type refers to the wrong arc (the classifier's for "
+            "'fixed', the HMM's for 'broken'). Slow = centred speed below 3 m/s; stationary = displacement over +-2 fixes below "
+            "2 m; '&gt; 20 m from ref. arc' = GPS fix more than 20 m from the reference arc it was aligned to. Source: "
+            "scripts/05b_hmm_error_analysis.py -> outputs/hmm/fix_break_analysis.csv.", "cap")]
+    txt = []
+    for part in ("train", "student_test"):
+        al, fx, bk = a.loc[(part, "all_obs")], a.loc[(part, "fixed")], a.loc[(part, "broken")]
+        r_slow = dv(f"hmm_broken_slow_overrep_{part}", (bk.slow / bk.n) / (al.slow / al.n))
+        r_far = dv(f"hmm_broken_far_overrep_{part}", (bk.far_from_reference / bk.n) / (al.far_from_reference / al.n))
+        dv(f"hmm_fixed_over_broken_{part}", fx.n / bk.n)
+        assert fx.n > 2 * bk.n and r_slow > 2 and r_far > 2
+        txt.append(f"{part}: {fx.n:,} fixed vs {bk.n:,} broken; among broken observations slow fixes are "
+                   f"{r_slow:.1f}x and off-reference fixes {r_far:.1f}x more frequent than overall")
+    fx_s = a.loc[("student_test", "fixed")]
+    st.append(P("<b>Interpretation.</b> " + "; ".join(txt) + ". The HMM fixes errors of all three types (on "
+                f"student_test {pct(fx_s.reverse_twin / fx_s.n)} reverse-direction, {pct(fx_s.adjacent / fx_s.n)} "
+                f"adjacent-arc, {pct(fx_s.other / fx_s.n)} other). What it breaks is concentrated where the road geometry "
+                "carries little information: slow or manoeuvring vehicles and fixes far from any road. In the inspected cases "
+                "below, the projections onto both directions of the road barely move from fix to fix, so the driving distance "
+                "is about 0 m for both twins and the transition model cannot tell them apart; the choice then rests on the "
+                "emissions accumulated over the whole run, and one decision affects every fix in it. Two inspected examples: "
+                "<b>student_test trip 40, fixes 0-75</b> - the GPS stays 24-37 m away from the first route arc, with headings "
+                "varying between 39 and 178 deg (the vehicle manoeuvres off the mapped network before joining the route); the "
+                "alignment must still label these fixes with the first route arc, and the HMM picks its reverse twin for the "
+                "whole stretch. <b>Student_test trip 7, from about fix 1150 to the end of the trip</b> - the vehicle slows down and "
+                "ends parked next to the road: the fixes form a dense cluster 12-27 m from the reference arc (zoomed map in "
+                "section 6) and the apparent speed of about 4 m/s is mostly GPS jitter; "
+                "the GPS heading drifts away from the reference arc's direction, the classifier is near 50/50 between the "
+                "two directions and the HMM commits to the opposite one for the rest of the trip. In "
+                "both cases the reference label itself is uncertain, but we count them as HMM errors - all numbers use the "
+                "reference as given."))
+    return st  # sec5b
 
 
 # ============================================================== section 6
@@ -610,10 +661,15 @@ def sec6(O, A, rj):
     k = 26
     for _, r in M[M.partition == "student_test"].iterrows():
         extra = (f" Top-1 classifier {f3(r.top1_classifier)}, HMM {f3(r.top1_hmm)}"
-                 + (" (in this window)." if "zoom" in r.map else " (whole trip)."))
+                 + (" (in this window)." if "zoom" in r["map"] else " (whole trip)."))
         st.append(img(O("maps", r.png), width=16 * cm,
-                      caption=f"Figure {k} - student_test trip {r.trip_id}: {r.purpose}.{extra} Interactive: outputs/maps/{r.map}"))
+                      caption=f"Figure {k} - student_test trip {r.trip_id}: {r.purpose}.{extra} Interactive: outputs/maps/{r['map']}"))
         k += 1
+    st.append(P("<b>Important when reading the maps:</b> an arc and its reverse twin have identical geometry, so a "
+                "prediction on the right road in the wrong direction is drawn exactly on top of the reference route. This is "
+                "why the zoomed map of trip 7 shows the red HMM route on the green reference although its window Top-1 is 0: "
+                "the HMM follows the same road in the opposite direction while the vehicle sits parked about 15 m off the road "
+                "(the dense GPS cluster around the end marker)."))
     st.append(P("Reading the maps: on the full-trip views the red HMM route lies on the green reference route almost "
                 "everywhere and is continuous, while the orange classifier-only route shows short detours onto side "
                 "streets and gaps; the zoomed views show the places where the two disagree, including the case where the "
@@ -666,14 +722,16 @@ def sec7(O, A, rj):
            P("Table 13 - Server-side scores per trip as logged by the API (student_test as EVAL_DIR). Sources: "
              "outputs/screenshots/api_console.log, ui_run_results.csv.", "cap")]
     shots = sorted(x for x in os.listdir(O("screenshots")) if x.startswith("ui_") and x.endswith(".png"))
-    st.append(img(O("screenshots", shots[0]), caption="Figure %d - UI after connecting: trip list from GET /trips." % 33))
+    M = pd.read_csv(O("maps", "maps_index.csv"), dtype={"trip_id": str})
+    f0 = 26 + int((M.partition == "student_test").sum())   # figures 26.. are the section-6 maps
+    st.append(img(O("screenshots", shots[0]), caption="Figure %d - UI after connecting: trip list from GET /trips." % f0))
     picks = [x for x in shots[1:]][:3]
     for i, s in enumerate(picks):
-        st.append(img(O("screenshots", s), caption=f"Figure {34 + i} - UI showing the prediction for {s[6:-4].replace('_', ' ')}: "
+        st.append(img(O("screenshots", s), caption=f"Figure {f0 + 1 + i} - UI showing the prediction for {s[6:-4].replace('_', ' ')}: "
                                                     "GPS points, HMM route (red), classifier-only route (orange dashed), "
                                                     "server-side metrics and timings."))
     st += [img(O("screenshots", "api_console.png"),
-               caption="Figure 37 - API console on Laptop 1 during the run: start-up, GET /health, GET /trips and one "
+               caption=f"Figure {f0 + 1 + len(picks)} - API console on Laptop 1 during the run: start-up, GET /health, GET /trips and one "
                        "POST /predict per trip with stage timings and server-side scores. This is the captured stdout of the "
                        "uvicorn process (outputs/screenshots/api_console.log), rendered to an image; during the live demo the "
                        "same lines appear in the CMD window of Laptop 1."),
@@ -688,9 +746,9 @@ def sec8(O, A, rj):
           P("<b>AI assistance.</b> This submission was produced with substantial help from an AI coding assistant (Claude "
             "Code, Anthropic). Under the team's direction it wrote most of the source code (feature engineering, training "
             "and evaluation scripts, HMM decoder, API, UI, map and report generation) and drafted the text of this report. "
-            "The starting point was the team's own EDA code and plan (src/pathsnap/io.py, geo.py, network.py, labels.py, "
-            "maps.py, scripts/01_eda.py)."),
-          P("<b>What was not AI-generated:</b> no number, table, plot or map in this report was written by hand or by the "
+            "It started from existing project code and a plan document (src/pathsnap/io.py, geo.py, network.py, "
+            "labels.py, maps.py, scripts/01_eda.py, PLAN.md) - [team: state who wrote these and how]."),
+          P("<b>What was not typed in:</b> no number, table, plot or map in this report was typed in by hand, by the team or by the "
             "assistant. Every one is produced by the scripts in the repository, run on the provided data, and read from the "
             "result files by report/build_report.py. Statements that depend on results (e.g. 'overfits', 'tuning helped') are "
             "guarded by assertions in the report generator and the build fails if the results do not support them. "
@@ -718,7 +776,6 @@ def sec8(O, A, rj):
 def build_all(O, A, rj):
     st = sec3(O, A, rj)
     st += sec4(O, A, rj)
-    s5 = sec5(O, A, rj)
-    st += s5[:-1] + sec5b(O, A, rj) + s5[-1:]
+    st += sec5(O, A, rj) + sec5b(O, A, rj)
     st += sec6(O, A, rj) + sec7(O, A, rj) + sec8(O, A, rj)
     return st

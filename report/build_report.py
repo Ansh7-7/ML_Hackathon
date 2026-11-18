@@ -209,7 +209,7 @@ for _, r in eda_maps.iterrows():
     story.append(img(O("maps", r.png), width=15 * cm,
                      caption=f"Figure {8 if r.trip_id == '00000033' else 7} - Folium map, train trip {r.trip_id} ({r.purpose}): "
                              f"GPS observations, nearby road network and reference route; interactive HTML: "
-                             f"outputs/maps/{r.map}. Partition: train."))
+                             f"outputs/maps/{r['map']}. Partition: train."))
 
 story += [P("2.2.5 Candidate generation (radius R and cap K)", "h2"),
           P(f"The reference arc must be in the candidate set, otherwise no model can choose it. We measured the "

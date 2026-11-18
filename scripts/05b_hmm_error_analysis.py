@@ -6,8 +6,10 @@ the transition caches written by 05_hmm_eval.py, then compares per observation:
   broken = classifier right, HMM wrong
 and characterises both sets: error type of the wrong prediction (reverse twin of
 the reference arc / adjacent arc / other), whether the vehicle is (nearly)
-stationary (GPS displacement over +-2 fixes < 2 m), and whether the observation
-lies within 30 fixes after a chain break.
+stationary (GPS displacement over +-2 fixes < 2 m), whether it is slow (centred
+speed < 3 m/s), whether the GPS fix is more than 20 m from its reference arc
+(e.g. manoeuvring off the mapped network - the alignment still has to assign it
+to a route arc), and whether it lies within 30 fixes after a chain break.
 Outputs: outputs/hmm/fix_break_analysis.csv (per partition and per trip)
 """
 import json
@@ -55,22 +57,31 @@ for part, pfile in [("train", "tuned_oof.npy"), ("student_test", "tuned_student_
         hmm, _ = states_to_arcs(lattice, active, st, n)
         clf, _ = top1_arcs(g.obs.to_numpy(), g.arc.to_numpy(), pp, n)
         lab = PT[PT.trip_id == tid].lab_arc.to_numpy()
+        far = PT[PT.trip_id == tid].lab_dist.to_numpy() > 20.0
+        n_ = len(pt.px)
+        i0, i1 = np.clip(np.arange(n_) - 1, 0, n_ - 1), np.clip(np.arange(n_) + 1, 0, n_ - 1)
+        span = np.maximum(pt.t[i1] - pt.t[i0], 1e-9)
+        slow = np.hypot(pt.px[i1] - pt.px[i0], pt.py[i1] - pt.py[i0]) / span < 3.0
         _, mv = gps_heading(pt.px, pt.py, 2)
         stationary = mv < 2.0
         near_break = np.zeros(n, bool)
         for i, _r in br:
             near_break[i:i + 30] = True
         net = pt.net
+        rows.append({"partition": part, "trip_id": tid, "set": "all_obs", "n": n, "reverse_twin": 0, "adjacent": 0,
+                     "other": 0, "stationary": int(stationary.sum()), "slow": int(slow.sum()),
+                     "far_from_reference": int(far.sum()), "near_break": int(near_break.sum()), "n_obs": n})
         for name, mask, wrong_arc in [("fixed", (clf != lab) & (hmm == lab), clf), ("broken", (clf == lab) & (hmm != lab), hmm)]:
             idx = np.where(mask)[0]
             kinds = pd.Series([kind(net, wrong_arc[i], lab[i]) if wrong_arc[i] >= 0 else "none" for i in idx], dtype=object)
             rows.append({"partition": part, "trip_id": tid, "set": name, "n": len(idx),
                          "reverse_twin": int((kinds == "reverse_twin").sum()), "adjacent": int((kinds == "adjacent").sum()),
                          "other": int((kinds == "other").sum()), "stationary": int(stationary[idx].sum()),
+                         "slow": int(slow[idx].sum()), "far_from_reference": int(far[idx].sum()),
                          "near_break": int(near_break[idx].sum()), "n_obs": n})
         print(part, tid, flush=True)
 R = pd.DataFrame(rows)
-agg = R.groupby(["partition", "set"])[["n", "reverse_twin", "adjacent", "other", "stationary", "near_break"]].sum().reset_index()
+agg = R.groupby(["partition", "set"])[["n", "reverse_twin", "adjacent", "other", "stationary", "slow", "far_from_reference", "near_break"]].sum().reset_index()
 agg["trip_id"] = "ALL"
 out = pd.concat([agg, R], ignore_index=True)
 out.to_csv(os.path.join(ROOT, "outputs", "hmm", "fix_break_analysis.csv"), index=False)

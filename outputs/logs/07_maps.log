@@ -1,0 +1,14 @@
+saved /home/user/work/PathSnap_handover/pathsnap/outputs/maps/eda_train_00000010.html
+saved /home/user/work/PathSnap_handover/pathsnap/outputs/maps/eda_train_00000033.html
+saved /home/user/work/PathSnap_handover/pathsnap/outputs/maps/student_test_00000077_zoom.html 0.8261314241881872
+saved /home/user/work/PathSnap_handover/pathsnap/outputs/maps/student_test_00000007_zoom.html 0.8596750369276218
+saved /home/user/work/PathSnap_handover/pathsnap/outputs/maps/student_test_00000040_zoom.html 0.9569282136894824
+                               map     partition   trip_id                                                                     purpose                             png  top1_classifier  top1_hmm
+0          eda_train_00000010.html         train  00000010                                                          typical train trip          eda_train_00000010.png              NaN       NaN
+1          eda_train_00000033.html         train  00000033                        excluded from training: GPS far from reference route          eda_train_00000033.png              NaN       NaN
+2       student_test_00000077.html  student_test  00000077                                                            largest HMM gain       student_test_00000077.png         0.763743  0.826131
+3  student_test_00000077_zoom.html  student_test  00000077  largest HMM gain - zoom on obs 2105-2164 (max classifier/HMM disagreement)  student_test_00000077_zoom.png         0.283333  0.883333
+4       student_test_00000007.html  student_test  00000007                                                            largest HMM loss       student_test_00000007.png         0.909158  0.859675
+5  student_test_00000007_zoom.html  student_test  00000007  largest HMM loss - zoom on obs 1236-1295 (max classifier/HMM disagreement)  student_test_00000007_zoom.png         0.433333  0.000000
+6       student_test_00000040.html  student_test  00000040                                                            median HMM Top-1       student_test_00000040.png         0.947913  0.956928
+7  student_test_00000040_zoom.html  student_test  00000040       median HMM Top-1 - zoom on obs 0-59 (max classifier/HMM disagreement)  student_test_00000040_zoom.png         0.683333  0.000000
