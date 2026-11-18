@@ -1,0 +1,18 @@
+{
+ "rows_per_obs_student_test": 11.132776617954072,
+ "cv_top1_best_minus_LogisticRegression": 0.027426007814547404,
+ "cv_top1_points_best_minus_LogisticRegression": 2.7426007814547404,
+ "cv_top1_RF_minus_ET": 0.008601913764365476,
+ "inference_ratio_LightGBM_over_XGBoost": 3.615937340440189,
+ "cv_top1_XGBoost_minus_MLP": 0.013223139692050134,
+ "top1_ceiling_student_test": 0.9985908141962422,
+ "gap_macro_f1_LogisticRegression": 0.003432877612623675,
+ "gap_macro_f1_GaussianNB": 0.0008891743210803771,
+ "gap_macro_f1_KNN": 0.04847400475223884,
+ "gap_macro_f1_RandomForest": 0.030001692554585513,
+ "gap_macro_f1_ExtraTrees": 0.02218912623671143,
+ "gap_macro_f1_HistGradientBoosting": 0.01822813573533799,
+ "gap_macro_f1_LightGBM": 0.028677623256617824,
+ "gap_macro_f1_XGBoost": 0.02052762567574018,
+ "gap_macro_f1_MLP": 0.008123915246437186
+}

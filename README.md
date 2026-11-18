@@ -53,12 +53,15 @@ Times are from a 4-core laptop-class CPU.
 | 2 | `python scripts/02_build_dataset.py` | candidate miss rate vs radius/K (selection on **train** only), feature tables, `artifacts/feature_config.json` | train (selection), both (tables) | ~1 min |
 | 3 | `python scripts/03_train_compare.py` | 9 models, 5-fold GroupKFold by trip on train, refit, evaluate on student_test | train (CV), student_test (comparison) | ~1.5 h (RF, KNN, MLP dominate) |
 | 3b | `python scripts/03b_plot_compare.py` | comparison table, model selection, all comparison plots | from step 3 outputs | seconds |
+| 3c | `python scripts/03c_error_analysis.py` | Top-1 error types per model (reverse direction / adjacent / other / missed) | student_test | ~1 min |
 | 4 | `python scripts/04_bayes_opt.py --trials 40` | Optuna TPE on the selected model (objective CV Top-1, train only), tuned vs untuned, `artifacts/model.joblib` | train (search), student_test (after search) | ~30–60 min |
 | 5 | `python scripts/05_hmm_eval.py` | HMM decoder grid (selection on train OOF), classifier-only vs HMM, `artifacts/hmm_config.json` | train, student_test | ~20 min |
+| 5b | `python scripts/05b_hmm_error_analysis.py` | what the HMM fixed and broke (error type, stationary, near breaks) | train, student_test | ~2 min |
 | 7 | `python scripts/07_maps.py` | Folium HTML maps and PNG screenshots | train (EDA maps), student_test | ~2 min |
 | 8 | `python scripts/08_screenshots.py` | starts API and UI, runs every student_test trip, captures UI screenshots and the API console log | student_test | ~2 min |
 | 9 | `python report/build_report.py` | builds `report/PathSnap_Technical_Report.pdf` from `outputs/` | – | seconds |
-| – | `python scripts/check_report_numbers.py` | cross-checks the report's numbers against `outputs/` | – | seconds |
+| – | `python scripts/check_report_numbers.py` | cross-checks every decimal number in the PDF against `outputs/` (prints its own chance-match rate) | – | seconds |
+| – | `pytest -q tests/test_api.py` | API contract: all trips predict, IDs only, no reference data in responses | EVAL_DIR | ~1 min |
 
 `scripts/03_train_compare.py --models XGBoost LightGBM` re-runs selected models only. Results per model
 are cached in `outputs/models/per_model/`; use `--force` to recompute.
