@@ -1,0 +1,52 @@
+{
+  "model": "ExtraTrees",
+  "family": "Tree ensemble (randomised)",
+  "params": {
+    "n_estimators": 300,
+    "min_samples_leaf": 5,
+    "max_features": "sqrt",
+    "n_jobs": 4,
+    "random_state": 42
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.8934323012783993,
+  "cv_top1_std": 0.021803641637861828,
+  "cv_macro_f1_mean": 0.9387582292034095,
+  "cv_macro_f1_std": 0.01079906265229051,
+  "cv_log_loss_mean": 0.05634634590640066,
+  "cv_log_loss_std": 0.008848959841736394,
+  "cv_precision_pos": 0.918217568715443,
+  "cv_recall_pos": 0.8619016207380674,
+  "train_macro_f1_mean": 0.9609473554401209,
+  "train_log_loss_mean": 0.037433599190586864,
+  "cv_fit_s_mean": 25.75897765159607,
+  "st_top1": 0.8856993736951984,
+  "st_macro_f1": 0.9327135890556038,
+  "st_log_loss": 0.05165119892494122,
+  "st_accuracy": 0.9787251997149609,
+  "st_precision_pos": 0.910363830624754,
+  "st_recall_pos": 0.8461297235143469,
+  "st_f1_pos": 0.8770722721855022,
+  "st_precision_macro": 0.9476533122467217,
+  "st_recall_macro": 0.918960232332594,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9302436979954514,
+  "st_confusion_matrix": [
+    [
+      192577,
+      1594
+    ],
+    [
+      2944,
+      16189
+    ]
+  ],
+  "final_fit_s": 33.2243115901947,
+  "final_fit_rows": 606345,
+  "st_inference_s": 1.8396573066711426,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 96.01551704964209
+}

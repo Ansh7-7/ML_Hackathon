@@ -65,7 +65,8 @@ def nearby_arcs(net, px, py, pad=150.0, max_arcs=25000):
 
 
 def folium_map(track, net, reference_arcs=None, predicted_arcs=None, classifier_arcs=None,
-               title="PathSnap", gps_every=1, out_html=None):
+               title="PathSnap", gps_every=1, out_html=None, show_classifier=False, bounds=None,
+               subtitle=None):
     import folium
 
     lat, lon = track["lat"].to_numpy(), track["lon"].to_numpy()
@@ -84,7 +85,7 @@ def folium_map(track, net, reference_arcs=None, predicted_arcs=None, classifier_
             folium.PolyLine(line, color=COLORS["reference"], weight=7, opacity=0.55, tooltip="reference").add_to(fg)
         fg.add_to(m)
     if classifier_arcs is not None:
-        fg = folium.FeatureGroup(name="Classifier-only prediction", show=False)
+        fg = folium.FeatureGroup(name="Classifier-only prediction", show=show_classifier)
         for line in _chain(net, dedupe_consecutive(classifier_arcs)):
             folium.PolyLine(line, color=COLORS["classifier"], weight=3, opacity=0.9, tooltip="classifier only").add_to(fg)
         fg.add_to(m)
@@ -105,19 +106,21 @@ def folium_map(track, net, reference_arcs=None, predicted_arcs=None, classifier_
     folium.CircleMarker([float(lat[-1]), float(lon[-1])], radius=7, color="black", fill=True, fill_color="#212121",
                         fill_opacity=1, tooltip="end").add_to(m)
     folium.LayerControl(collapsed=False).add_to(m)
-    legend = f"""
-    <div style="position: fixed; bottom: 24px; left: 24px; z-index: 9999; background: white; padding: 8px 12px;
-                border: 1px solid #999; border-radius: 6px; font: 12px sans-serif;">
-      <b>{title}</b><br>
-      <span style="color:{COLORS['gps']}">&#9679;</span> GPS observations<br>
-      <span style="color:{COLORS['network']}">&#9473;</span> Road network<br>
-      <span style="color:{COLORS['reference']}">&#9473;</span> Reference route<br>
-      <span style="color:{COLORS['classifier']}">&#9473;</span> Classifier-only<br>
-      <span style="color:{COLORS['predicted']}">&#9473;</span> Predicted (HMM)<br>
-      <span style="color:#00e676">&#9679;</span> start &nbsp; <span style="color:#212121">&#9679;</span> end
-    </div>"""
+    items = [f'<span style="color:{COLORS["gps"]}">&#9679;</span> GPS observations',
+             f'<span style="color:{COLORS["network"]}">&#9473;</span> Road network (nearby)']
+    if reference_arcs is not None:
+        items.append(f'<span style="color:{COLORS["reference"]}">&#9473;</span> Reference route')
+    if classifier_arcs is not None:
+        items.append(f'<span style="color:{COLORS["classifier"]}">&#9473;</span> Classifier-only')
+    if predicted_arcs is not None:
+        items.append(f'<span style="color:{COLORS["predicted"]}">&#9473;</span> Predicted (classifier + HMM)')
+    items.append('<span style="color:#00e676">&#9679;</span> start &nbsp; <span style="color:#212121">&#9679;</span> end')
+    sub = f'<span style="color:#555">{subtitle}</span><br>' if subtitle else ""
+    legend = ('<div style="position: fixed; bottom: 50px; left: 12px; z-index: 9999; background: white; '
+              'padding: 8px 12px; border: 1px solid #999; border-radius: 6px; font: 12px sans-serif;">'
+              f"<b>{title}</b><br>{sub}" + "<br>".join(items) + "</div>")
     m.get_root().html.add_child(folium.Element(legend))
-    m.fit_bounds([[float(lat.min()), float(lon.min())], [float(lat.max()), float(lon.max())]])
+    m.fit_bounds(bounds or [[float(lat.min()), float(lon.min())], [float(lat.max()), float(lon.max())]])
     if out_html:
         m.save(out_html)
     return m

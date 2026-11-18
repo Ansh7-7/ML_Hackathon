@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathSnap Evaluator</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+<header>
+  <h1>PathSnap evaluator</h1>
+  <span class="sub">map-matching and route reconstruction (classifier + HMM/Viterbi)</span>
+  <div class="api">
+    <label for="apiUrl">API URL</label>
+    <input id="apiUrl" type="text" spellcheck="false">
+    <button id="connectBtn">Connect</button>
+    <span id="apiStatus" class="pill">not connected</span>
+  </div>
+</header>
+<main>
+  <aside>
+    <section>
+      <h2>Evaluation trips</h2>
+      <div id="tripList" class="trips"><em>Connect to the API to list trips.</em></div>
+    </section>
+    <section>
+      <h2>Results <span id="tripLabel"></span></h2>
+      <div id="metrics"><em>Select a trip.</em></div>
+    </section>
+    <section>
+      <h2>Timings</h2>
+      <div id="timings"><em>-</em></div>
+    </section>
+    <section>
+      <h2>Request log</h2>
+      <pre id="log"></pre>
+    </section>
+  </aside>
+  <div id="mapWrap">
+    <div id="map"></div>
+    <div id="busy" class="hidden">Running pipeline on the API&hellip;</div>
+  </div>
+</main>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

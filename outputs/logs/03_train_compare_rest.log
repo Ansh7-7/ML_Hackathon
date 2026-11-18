@@ -1,0 +1,26 @@
+train rows 1,817,673 (fit rows with stride 3: 606,345), student_test rows 213,304, points 19,160
+[HistGradientBoosting] fold 0: val top1=0.8677 macroF1=0.9274 logloss=0.0693 | train macroF1=0.9637 | fit 7s
+[HistGradientBoosting] fold 1: val top1=0.8914 macroF1=0.9474 logloss=0.0723 | train macroF1=0.9602 | fit 6s
+[HistGradientBoosting] fold 2: val top1=0.8834 macroF1=0.9377 logloss=0.0874 | train macroF1=0.9616 | fit 6s
+[HistGradientBoosting] fold 3: val top1=0.8989 macroF1=0.9421 logloss=0.0625 | train macroF1=0.9583 | fit 7s
+[HistGradientBoosting] fold 4: val top1=0.9178 macroF1=0.9538 logloss=0.0538 | train macroF1=0.9557 | fit 6s
+[HistGradientBoosting] CV top1=0.8918±0.0186 CV macroF1=0.9417 | ST top1=0.8857 macroF1=0.9345 logloss=0.0681 cont=0.9186 | fit 8s inf 0.67s
+[LightGBM] fold 0: val top1=0.8766 macroF1=0.9328 logloss=0.0570 | train macroF1=0.9764 | fit 7s
+[LightGBM] fold 1: val top1=0.8967 macroF1=0.9493 logloss=0.0582 | train macroF1=0.9761 | fit 10s
+[LightGBM] fold 2: val top1=0.8956 macroF1=0.9427 logloss=0.0597 | train macroF1=0.9735 | fit 6s
+[LightGBM] fold 3: val top1=0.9039 macroF1=0.9436 logloss=0.0588 | train macroF1=0.9724 | fit 7s
+[LightGBM] fold 4: val top1=0.9308 macroF1=0.9592 logloss=0.0366 | train macroF1=0.9727 | fit 7s
+[LightGBM] CV top1=0.9007±0.0196 CV macroF1=0.9455 | ST top1=0.8980 macroF1=0.9400 logloss=0.0466 cont=0.9367 | fit 8s inf 1.28s
+[XGBoost] fold 0: val top1=0.8756 macroF1=0.9320 logloss=0.0563 | train macroF1=0.9690 | fit 6s
+[XGBoost] fold 1: val top1=0.8971 macroF1=0.9502 logloss=0.0581 | train macroF1=0.9669 | fit 6s
+[XGBoost] fold 2: val top1=0.8962 macroF1=0.9430 logloss=0.0585 | train macroF1=0.9658 | fit 6s
+[XGBoost] fold 3: val top1=0.9073 macroF1=0.9453 logloss=0.0468 | train macroF1=0.9651 | fit 6s
+[XGBoost] fold 4: val top1=0.9308 macroF1=0.9584 logloss=0.0372 | train macroF1=0.9649 | fit 6s
+[XGBoost] CV top1=0.9014±0.0200 CV macroF1=0.9458 | ST top1=0.9008 macroF1=0.9407 logloss=0.0466 cont=0.9380 | fit 8s inf 0.35s
+[ExtraTrees] fold 0: val top1=0.8613 macroF1=0.9225 logloss=0.0611 | train macroF1=0.9634 | fit 25s
+[ExtraTrees] fold 1: val top1=0.8904 macroF1=0.9449 logloss=0.0643 | train macroF1=0.9609 | fit 22s
+[ExtraTrees] fold 2: val top1=0.8938 macroF1=0.9377 logloss=0.0618 | train macroF1=0.9606 | fit 30s
+[ExtraTrees] fold 3: val top1=0.8995 macroF1=0.9373 logloss=0.0515 | train macroF1=0.9604 | fit 26s
+[ExtraTrees] fold 4: val top1=0.9222 macroF1=0.9514 logloss=0.0431 | train macroF1=0.9595 | fit 25s
+[ExtraTrees] CV top1=0.8934±0.0218 CV macroF1=0.9388 | ST top1=0.8857 macroF1=0.9327 logloss=0.0517 cont=0.9302 | fit 33s inf 1.84s
+[RandomForest] fold 0: val top1=0.8764 macroF1=0.9313 logloss=0.0576 | train macroF1=0.9767 | fit 101s

@@ -1,0 +1,56 @@
+{
+  "model": "XGBoost",
+  "family": "Boosting",
+  "params": {
+    "n_estimators": 400,
+    "learning_rate": 0.05,
+    "max_depth": 6,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "tree_method": "hist",
+    "n_jobs": 4,
+    "random_state": 42,
+    "eval_metric": "logloss"
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.9013984972259301,
+  "cv_top1_std": 0.020047628828067272,
+  "cv_macro_f1_mean": 0.9457967528090082,
+  "cv_macro_f1_std": 0.009692580741558517,
+  "cv_log_loss_mean": 0.05136177199232134,
+  "cv_log_loss_std": 0.009252644933646373,
+  "cv_precision_pos": 0.9100860507653236,
+  "cv_recall_pos": 0.894398854311269,
+  "train_macro_f1_mean": 0.9663243784847484,
+  "train_log_loss_mean": 0.0332327355792918,
+  "cv_fit_s_mean": 6.02153754234314,
+  "st_top1": 0.9008350730688935,
+  "st_macro_f1": 0.9407178963922782,
+  "st_log_loss": 0.04658502988231427,
+  "st_accuracy": 0.9809426921201665,
+  "st_precision_pos": 0.9079930683418174,
+  "st_recall_pos": 0.8763393090471959,
+  "st_f1_pos": 0.8918854224846405,
+  "st_precision_macro": 0.9479248233136837,
+  "st_recall_macro": 0.9337946448671611,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9379709831584417,
+  "st_confusion_matrix": [
+    [
+      192472,
+      1699
+    ],
+    [
+      2366,
+      16767
+    ]
+  ],
+  "final_fit_s": 7.575784683227539,
+  "final_fit_rows": 606345,
+  "st_inference_s": 0.3530111312866211,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 18.424380547318428
+}

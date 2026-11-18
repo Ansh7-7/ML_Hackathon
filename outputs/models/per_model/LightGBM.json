@@ -1,0 +1,57 @@
+{
+  "model": "LightGBM",
+  "family": "Boosting",
+  "params": {
+    "n_estimators": 400,
+    "learning_rate": 0.05,
+    "num_leaves": 63,
+    "subsample": 0.8,
+    "subsample_freq": 1,
+    "colsample_bytree": 0.8,
+    "min_child_samples": 20,
+    "n_jobs": 4,
+    "random_state": 42,
+    "verbose": -1
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.9007243879124246,
+  "cv_top1_std": 0.019597722228272794,
+  "cv_macro_f1_mean": 0.9455376308089523,
+  "cv_macro_f1_std": 0.00969204135231196,
+  "cv_log_loss_mean": 0.05408389412550303,
+  "cv_log_loss_std": 0.009818339345800493,
+  "cv_precision_pos": 0.9082941018570392,
+  "cv_recall_pos": 0.8952479091286115,
+  "train_macro_f1_mean": 0.9742152540655701,
+  "train_log_loss_mean": 0.024913775337919455,
+  "cv_fit_s_mean": 7.3383584976196286,
+  "st_top1": 0.8979645093945721,
+  "st_macro_f1": 0.9400488396727154,
+  "st_log_loss": 0.046582645634879745,
+  "st_accuracy": 0.9806989085999325,
+  "st_precision_pos": 0.9052245250431779,
+  "st_recall_pos": 0.8766006376417708,
+  "st_f1_pos": 0.8906826690741085,
+  "st_precision_macro": 0.9465514542084497,
+  "st_recall_macro": 0.9337785313242973,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9366662613020729,
+  "st_confusion_matrix": [
+    [
+      192415,
+      1756
+    ],
+    [
+      2361,
+      16772
+    ]
+  ],
+  "final_fit_s": 7.532791614532471,
+  "final_fit_rows": 606345,
+  "st_inference_s": 1.2764661312103271,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 66.62140559552856
+}

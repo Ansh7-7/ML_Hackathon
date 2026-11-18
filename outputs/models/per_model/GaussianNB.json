@@ -1,0 +1,48 @@
+{
+  "model": "GaussianNB",
+  "family": "Probabilistic (generative)",
+  "params": {
+    "var_smoothing": 1e-09
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.8547646625228206,
+  "cv_top1_std": 0.02522623495911341,
+  "cv_macro_f1_mean": 0.8344158628231927,
+  "cv_macro_f1_std": 0.017157650248063275,
+  "cv_log_loss_mean": 0.6395414413390771,
+  "cv_log_loss_std": 0.14046585771207523,
+  "cv_precision_pos": 0.5872921001900264,
+  "cv_recall_pos": 0.9021872156591583,
+  "train_macro_f1_mean": 0.8353050371442731,
+  "train_log_loss_mean": 0.6342788211986298,
+  "cv_fit_s_mean": 0.2233487606048584,
+  "st_top1": 0.8563674321503132,
+  "st_macro_f1": 0.8254579212693334,
+  "st_log_loss": 0.6216812186620081,
+  "st_accuracy": 0.9262883021415445,
+  "st_precision_pos": 0.5532014478282576,
+  "st_recall_pos": 0.926618930643391,
+  "st_f1_pos": 0.6927961548230789,
+  "st_precision_macro": 0.7727277486746884,
+  "st_recall_macro": 0.9264373268458159,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9216273881825533,
+  "st_confusion_matrix": [
+    [
+      179852,
+      14319
+    ],
+    [
+      1404,
+      17729
+    ]
+  ],
+  "final_fit_s": 0.24302124977111816,
+  "final_fit_rows": 606345,
+  "st_inference_s": 0.03643393516540527,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 1.901562378152676
+}

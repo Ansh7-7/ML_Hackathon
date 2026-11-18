@@ -1,0 +1,50 @@
+{
+  "model": "LogisticRegression",
+  "family": "Linear / probabilistic",
+  "params": {
+    "C": 1.0,
+    "solver": "lbfgs",
+    "max_iter": 1000
+  },
+  "seed": 42,
+  "train_stride": 3,
+  "fit_row_cap": null,
+  "cv_top1_mean": 0.8746082072282174,
+  "cv_top1_std": 0.023820101811119196,
+  "cv_macro_f1_mean": 0.9182572614760401,
+  "cv_macro_f1_std": 0.016850846511373162,
+  "cv_log_loss_mean": 0.08450882051334505,
+  "cv_log_loss_std": 0.013316173756508475,
+  "cv_precision_pos": 0.8631011289103843,
+  "cv_recall_pos": 0.8422161479954333,
+  "train_macro_f1_mean": 0.9216901390886638,
+  "train_log_loss_mean": 0.08257538514346,
+  "cv_fit_s_mean": 2.1006703853607176,
+  "st_top1": 0.8707202505219207,
+  "st_macro_f1": 0.9173540058637282,
+  "st_log_loss": 0.0757751859003389,
+  "st_accuracy": 0.9732119416419758,
+  "st_precision_pos": 0.856679602360321,
+  "st_recall_pos": 0.8422620603146397,
+  "st_f1_pos": 0.8494096563356526,
+  "st_precision_macro": 0.9205811671933333,
+  "st_recall_macro": 0.9141886958231504,
+  "st_miss_rate": 0.0014091858037578175,
+  "st_route_continuity": 0.9271096577187661,
+  "st_confusion_matrix": [
+    [
+      191475,
+      2696
+    ],
+    [
+      3018,
+      16115
+    ]
+  ],
+  "final_fit_s": 2.4356982707977295,
+  "final_fit_rows": 606345,
+  "st_inference_s": 0.0212404727935791,
+  "st_rows": 213304,
+  "st_points": 19160,
+  "st_inference_ms_per_1000_obs": 1.1085841750302246
+}
