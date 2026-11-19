@@ -1,17 +1,17 @@
-"""Build report/PathSnap_Technical_Report.pdf from the files in outputs/ and artifacts/.
+"""Build the consolidated PathSnap_Technical_Report.pdf from the files in outputs/ and artifacts/.
 
 Every number printed in the report is read here from a result file produced by
 scripts/01-08 (nothing is typed in by hand). Each table/figure caption names
 the source file and the dataset partition it was computed on.
 
-    python report/build_report.py
+    python build_report.py
 """
 import json
 import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.normpath(os.path.join(HERE, ".."))
+ROOT = HERE
 sys.path.insert(0, HERE)
 
 import numpy as np
@@ -90,7 +90,7 @@ story += [P("1. System overview", "h1"),
               "reference route server-side; an HTML/JS UI on Laptop 2 shows the route and the scores (section 7)."]),
           P("<b>Partitions.</b> <i>train</i> (80 trips) - fitting, cross-validation (5-fold GroupKFold by trip), "
             "Bayesian optimisation and decoder tuning; <i>student_test</i> (10 trips) - development-stage model "
-            "comparison; the evaluator trips are not in our dataset and are never used. The API loads trips from a "
+            "comparison. Evaluator trips are reserved for evaluation of the frozen pipeline. The API loads trips from a "
             "configurable folder (<font face='Courier'>EVAL_DIR</font>).")]
 
 # ============================================================ 2.2 EDA
@@ -100,7 +100,7 @@ dt1_st = np.average(st_inv.share_dt_eq_1s, weights=st_inv.n_obs - 1)
 story += [PageBreak(), P("2.2 Dataset understanding and exploratory data analysis", "h1"),
           P("Partitions used: <b>train (80 trips) and student_test (10 trips)</b> for the inventory and quality checks "
             "(scripts/01_eda.py, outputs/eda/); <b>train only</b> for every decision (candidate radius, features, "
-            "exclusions). Evaluator data is not available and never read.")]
+            "exclusions). This exploratory analysis uses the supplied training and student-testing partitions.")]
 
 story += [P("2.2.1 Raw data and inventory", "h2"),
           P("Each trip folder holds four header-less, whitespace-separated files: <font face='Courier'>.track</font> "

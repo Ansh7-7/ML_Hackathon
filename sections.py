@@ -691,7 +691,7 @@ def sec7(O, A, rj):
           P("<b>Laptop 1 - FastAPI backend</b> (api/main.py, started with <font face='Courier'>uvicorn api.main:app --host "
             "0.0.0.0 --port 8000</font>). On start-up it loads artifacts/model.joblib, feature_config.json and "
             "hmm_config.json and lists the trips in <font face='Courier'>EVAL_DIR</font> (environment variable; default "
-            "data/raw/student_test as a stand-in, since the evaluator trips are not in our dataset)."),
+            "data/raw/student_test for development). The organiser-supplied evaluator trips are loaded separately for the final demo."),
           table([["Endpoint", "Request", "Response"],
                  ["GET /health", "-", "status, loaded model, EVAL_DIR, number of trips"],
                  ["GET /trips", "-", "{\"trips\": [ids]} - IDs only, read from the folders in EVAL_DIR"],
@@ -739,28 +739,33 @@ def sec7(O, A, rj):
                        "same lines appear in the CMD window of Laptop 1."),
            P("All 10 UI screenshots are in outputs/screenshots/. Note: basemap tiles need internet; in our headless run "
              "they were unavailable, so the map background is plain.", "small")]
+    st += [P("7.2 Receiving laptop terminal", "h2"),
+           img(O("screenshots", "receiving_laptop_terminal.png"), grayscale=False,
+               caption=f"Figure {f0 + 2 + len(picks)} - Terminal on the receiving Mac showing a successful LAN "
+                       "POST /predict request and a later local repeat on evaluator trip 00000015. The local repeat "
+                       "shows the server-side scores and HTTP 200 OK. Source: outputs/screenshots/receiving_laptop_terminal.png.")]
     return st
 
 
 # ============================================================== section 8
 def sec8(O, A, rj):
     st = [PageBreak(), P("8. Academic integrity and AI-use disclosure", "h1"),
-          P("<b>AI assistance.</b> We used an AI coding assistant (Claude Code, Anthropic) heavily while building this "
-            "project, and we're disclosing that plainly rather than glossing over it. Working under our direction, it wrote "
-            "most of the source code (feature engineering, training and evaluation scripts, HMM decoder, API, UI, map and "
-            "report generation) and drafted the text of this report. It built on existing project code and a plan document "
-            "we gave it (src/pathsnap/io.py, geo.py, network.py, labels.py, maps.py, scripts/01_eda.py, PLAN.md) - "
-            "[team: state who wrote these and how]."),
+          P("<b>AI assistance.</b> The team used Claude Code (Anthropic) to write much of the feature engineering, "
+            "training and evaluation code, HMM decoder, API, UI, map generation and report generation, and to draft "
+            "the report. The repository records the initial I/O, geometry, road network, label alignment, maps, EDA and "
+            "plan as team handover material (commit 05b9290). The handover credits a teammate for the initial EDA and "
+            "map scripts, without specifying individual authorship for the rest of the starter code. OpenAI Codex "
+            "assisted with local backend setup, API verification and the README."),
           P("<b>What we didn't type in by hand:</b> no number, table, plot or map in this report was typed in manually, by "
             "us or by the assistant. Every one comes out of the scripts in the repository, run on the provided data, and is "
-            "pulled from the result files by report/build_report.py. Any claim that depends on the results (e.g. 'overfits', "
+            "pulled from the result files by build_report.py. Any claim that depends on the results (e.g. 'overfits', "
             "'tuning helped') is checked by an assertion in the report generator, so the build itself fails if the results "
             "stop supporting the claim. scripts/check_report_numbers.py then re-checks every number in the finished report "
             "against outputs/ as a second line of defence. The repository history shows the order the stages were actually "
             "built and run in."),
           P("<b>Data integrity.</b> Models, features, hyperparameters, the candidate radius, decoder parameters and thresholds "
             "were chosen using the train partition only (student_test was used for comparison and reported, and its numbers "
-            "for every decoder configuration are published alongside). Evaluator-test data was never available or used. "
+            "for every decoder configuration are published alongside). Evaluator trips were used for final inference and scoring after model and decoder selection. "
             "Reference routes never enter the prediction pipeline or the UI. No predictions are hardcoded."),
           P("<b>Team responsibility.</b> Every team member must be able to explain the code, the experiments and the "
             "conclusions in this report at the viva; the per-stage scripts, logs in outputs/logs/ and this report are the "
@@ -772,7 +777,7 @@ def sec8(O, A, rj):
            P("pip install -r requirements.txt; place data in data/raw/{train,student_test}; then run in order: "
              "scripts/01_eda.py, 02_build_dataset.py, 03_train_compare.py, 03b_plot_compare.py, 03c_error_analysis.py, "
              "03d_paired_comparison.py, 04_bayes_opt.py --trials 40, 04b_hpo_plots.py, 05_hmm_eval.py, 05b_hmm_error_analysis.py, 07_maps.py, 08_screenshots.py, "
-             "report/build_report.py, scripts/check_report_numbers.py. Logs of the runs used for this report are in "
+             "build_report.py, then scripts/check_report_numbers.py PathSnap_Technical_Report.pdf. Logs of the runs used for this report are in "
              "outputs/logs/. Seeds: 42 (numpy, scikit-learn, LightGBM, XGBoost, Optuna).", "small")]
     return st
 

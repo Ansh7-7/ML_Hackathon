@@ -7,8 +7,24 @@ segments. A FastAPI service (Laptop 1) runs the whole pipeline and scores the re
 the server-side reference route. An HTML/JS UI (Laptop 2) lists the trips, sends the chosen
 trip ID and shows the predicted route and the scores.
 
-The technical report is `report/PathSnap_Technical_Report.pdf`. Every number in it is produced by the
+The submission report is [`PathSnap_Technical_Report.pdf`](PathSnap_Technical_Report.pdf). Every number in it is produced by the
 scripts below and stored under `outputs/`.
+
+## Submission checklist
+
+| Requirement | Where to find it |
+|---|---|
+| Original dataset and preprocessing | The supplied ZIP contains `.track`, `.nodes`, `.arcs`, and `.route` files. [Data placement](#2-data-placement) · [Loader](src/pathsnap/io.py) · [EDA](outputs/eda/) |
+| Feature engineering and training tables | [Feature code](src/pathsnap/features.py) · [Dataset builder](scripts/02_build_dataset.py). The supplied ZIP has no `dataset.csv`. Generated tables are linked below. |
+| Generated Parquet dataset | Candidate rows with 25 features: [training](data/processed/train.parquet), [student testing](data/processed/student_test.parquet). One row per GPS point: [training](data/processed/train_points.parquet), [student testing](data/processed/student_test_points.parquet). |
+| Model training and evaluation | [Training script](scripts/03_train_compare.py) · [Model definitions](src/pathsnap/models.py) · [Comparison CSV](outputs/models/comparison.csv) · [Plots and confusion matrices](outputs/figures/) |
+| Bayesian optimisation | [Tuning script](scripts/04_bayes_opt.py) · [Search ranges](outputs/hpo/search_space.json) · [Trials CSV](outputs/hpo/trials.csv) · [Tuned vs. untuned](outputs/hpo/tuned_vs_untuned.csv) |
+| HMM and Viterbi | [Decoder](src/pathsnap/hmm.py) · [Evaluation script](scripts/05_hmm_eval.py) · [Grid search](outputs/hmm/grid.csv) · [Classifier vs. HMM scores](outputs/hmm/summary.csv) |
+| API and evaluator UI | [FastAPI backend](api/main.py) · [Model loading and scoring](src/pathsnap/pipeline.py) · [UI source](ui/) · [API tests](tests/test_api.py) |
+| Deployment and saved model | [Installation](#1-installation) · [Two-laptop setup](#4-demo-api-on-laptop-1-ui-on-laptop-2) · [Dependencies](requirements.txt) · [Model and configs](artifacts/) |
+| Folium and supporting results | [Map-generation code](src/pathsnap/maps.py) · [Interactive maps](outputs/maps/) · [Experiment logs](outputs/logs/) · [Trip inventory CSV](outputs/eda/trip_inventory.csv) |
+| UI and API evidence | [UI screenshots and API logs](outputs/screenshots/) · [Receiving laptop terminal screenshot](outputs/screenshots/receiving_laptop_terminal.png) |
+| Consolidated PDF report | [Technical report](PathSnap_Technical_Report.pdf) · [Report builder](build_report.py) |
 
 ## 1. Installation
 
@@ -63,8 +79,8 @@ Times are from a 4-core laptop-class CPU.
 | 8 | `python scripts/08_screenshots.py` | starts API and UI, runs every student_test trip, captures UI screenshots and the API console log | student_test | ~2 min |
 | 9a | `python scripts/09_static_viewer.py` | single-file interactive viewer of the deployed pipeline's results for every trip in `EVAL_DIR` (`outputs/maps/pathsnap_viewer.html`, opens in any browser without Python) | student_test | ~15 s |
 | 10 | `python scripts/10_render_logs.py` | renders the captured training logs (`outputs/logs/*.log`) as terminal-style PNGs for slides / the viva | – | seconds |
-| 9 | `python report/build_report.py` | builds `report/PathSnap_Technical_Report.pdf` from `outputs/` | – | seconds |
-| – | `python scripts/check_report_numbers.py` | cross-checks every decimal number in the PDF against `outputs/` (prints its own chance-match rate) | – | seconds |
+| 9 | `python build_report.py` | builds the root `PathSnap_Technical_Report.pdf` from `outputs/` | – | seconds |
+| – | `python scripts/check_report_numbers.py PathSnap_Technical_Report.pdf` | cross-checks every decimal number in the PDF against `outputs/` (prints its own chance-match rate) | – | seconds |
 | – | `pytest -q tests/test_api.py` | API contract: all trips predict, IDs only, no reference data in responses | EVAL_DIR | ~1 min |
 
 Steps 3c, 3d, 4b and 5b are short analysis scripts that read the results of the step before them. `scripts/03_train_compare.py --models XGBoost LightGBM` re-runs selected models only. Results per model
@@ -190,7 +206,7 @@ outputs/
   logs/                      stdout of every pipeline run
 report/                      build_report.py and PathSnap_Technical_Report.pdf
 data/raw/                    (not committed) raw dataset
-data/processed/              (not committed) feature tables, predictions, HMM caches (rebuilt by steps 2-5)
+data/processed/              four committed Parquet tables; local prediction and HMM caches (rebuilt by steps 2-5)
 ```
 
 ## 6. Notes
