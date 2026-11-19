@@ -206,9 +206,9 @@ def sec3(O, A, rj):
         A1="A linear, well-understood probabilistic baseline. Most of our features are monotone evidence (smaller distance, "
            "smaller heading difference, closer context distances = more likely), which a linear logit can weigh directly, "
            "and its probabilities are a natural emission model for the HMM.",
-        A2=f"Strengths: fastest inference of all models ({C.loc['LogisticRegression', 'Inference time student-test [s]']:.2f} s), "
-           f"stable folds, reasonably calibrated (student_test log loss {f4(C.loc['LogisticRegression', 'Student-test Log loss'])}). "
-           "Limitation: one linear boundary cannot express interactions that matter here - e.g. heading is only informative "
+        A2=f"What works in its favour: it's the fastest model at inference ({C.loc['LogisticRegression', 'Inference time student-test [s]']:.2f} s), "
+           f"its folds are stable, and it's reasonably calibrated (student_test log loss {f4(C.loc['LogisticRegression', 'Student-test Log loss'])}). "
+           "The catch is that one linear boundary cannot express interactions that matter here - e.g. heading is only informative "
            "when the vehicle moves (low_motion) and distance matters less when context distances agree. Its Top-1 is "
            f"{f4(dv('cv_top1_best_minus_LogisticRegression', best_cv - C.loc['LogisticRegression', 'CV Top-1 (mean)']))} below the best CV model.",
         B6="Binary cross-entropy (log loss) with L2 penalty (C = 1.0 is the inverse regularisation strength), minimised by L-BFGS.",
@@ -222,8 +222,8 @@ def sec3(O, A, rj):
     MD["GaussianNB"] = dict(
         A1="A generative probabilistic baseline that models each feature per class as a Gaussian; it is extremely cheap and "
            "shows how far simple per-feature evidence goes on this problem.",
-        A2=f"Strength: trains in {C.loc['GaussianNB', 'Train time final fit [s]']:.2f} s and needs no tuning. Limitations seen in "
-           "our results: (i) the independence assumption is badly violated - dist, dist_minus_min, dist_ratio, the four "
+        A2=f"Its one real advantage: it trains in {C.loc['GaussianNB', 'Train time final fit [s]']:.2f} s and needs no tuning at all. The results expose two problems, though: "
+           "(i) the independence assumption is badly violated - dist, dist_minus_min, dist_ratio, the four "
            "context distances and ctx_mean all measure nearly the same thing, so their evidence is counted many times and "
            f"the probabilities become extreme (log loss {f4(C.loc['GaussianNB', 'Student-test Log loss'])}, about "
            f"{C.loc['GaussianNB', 'Student-test Log loss'] / C.loc['XGBoost', 'Student-test Log loss']:.0f}x XGBoost); "
@@ -241,7 +241,7 @@ def sec3(O, A, rj):
         A1="Instance-based: a candidate is scored by how many similar (observation, candidate) situations in the training data "
            "were the reference arc. With standardised features 'similar' means similar distance/heading/context patterns, "
            "a reasonable non-parametric notion for map matching.",
-        A2=f"Strengths: no training, non-linear decision surface. Limitations seen here: it is by far the slowest at inference "
+        A2=f"It needs no training step and gives a non-linear decision surface for free. On the downside, it is by far the slowest at inference "
            f"({C.loc['KNN', 'Inference time student-test [s]']:.1f} s, {C.loc['KNN', 'Inference [ms / 1000 obs]']:.0f} ms per "
            "1000 observations, against well under 1 s for most other models) because every prediction scans the stored sample; "
            "the stored sample had to be capped at 150,000 rows, and all features get equal weight after scaling, so "
@@ -258,8 +258,8 @@ def sec3(O, A, rj):
         A1="Bagged deep decision trees capture the feature interactions that the linear model misses (e.g. heading only "
            "counts while moving; context distance overrides point distance) without feature scaling, and averaging many "
            "trees gives usable probabilities.",
-        A2=f"Strengths: best mean CV Top-1 of all nine models ({f4(C.loc['RandomForest', 'CV Top-1 (mean)'])}), robust to "
-           f"skewed features. Limitations: the slowest training ({C.loc['RandomForest', 'Train time final fit [s]']:.0f} s for "
+        A2=f"It posts the best mean CV Top-1 of all nine models ({f4(C.loc['RandomForest', 'CV Top-1 (mean)'])}) and handles "
+           f"skewed features without complaint. The price is the slowest training of the lot ({C.loc['RandomForest', 'Train time final fit [s]']:.0f} s for "
            "the final fit), a large model file, and slightly worse calibration than the boosted models (CV log loss "
            f"{f4(C.loc['RandomForest', 'CV Log loss'])} vs {f4(C.loc['XGBoost', 'CV Log loss'])} for XGBoost).",
         B6="Each tree greedily minimises Gini impurity; the forest averages tree class-probability estimates (no global loss).",
@@ -271,8 +271,8 @@ def sec3(O, A, rj):
     MD["ExtraTrees"] = dict(
         A1="Like the random forest but with random split thresholds: more randomisation reduces variance and training cost, "
            "useful on 600k strongly autocorrelated rows.",
-        A2=f"Strengths: about {C.loc['RandomForest', 'Train time final fit [s]'] / C.loc['ExtraTrees', 'Train time final fit [s]']:.0f}x "
-           "faster to train than the random forest. Limitation seen: random thresholds are a poor fit for the few very "
+        A2=f"It trains about {C.loc['RandomForest', 'Train time final fit [s]'] / C.loc['ExtraTrees', 'Train time final fit [s]']:.0f}x "
+           "faster than the random forest. But the random thresholds turn out to be a poor fit for the few very "
            "sharp cut-offs that matter here (a few metres of distance difference, small heading differences), so it is "
            f"{f4(dv('cv_top1_RF_minus_ET', C.loc['RandomForest', 'CV Top-1 (mean)'] - C.loc['ExtraTrees', 'CV Top-1 (mean)']))} below RF in CV Top-1 and "
            "has the slowest inference among the tree ensembles (300 trees).",
@@ -284,8 +284,8 @@ def sec3(O, A, rj):
     MD["HistGradientBoosting"] = dict(
         A1="Gradient-boosted trees on histogram-binned features: sequential trees correct the previous errors, which suits "
            "the many small, hard cases (junctions, parallel roads); scikit-learn's implementation is fast and native.",
-        A2=f"Strengths: {C.loc['HistGradientBoosting', 'Train time final fit [s]']:.1f} s to train, good Macro F1. "
-           f"Limitation seen: the worst-calibrated boosted model (CV log loss {f4(C.loc['HistGradientBoosting', 'CV Log loss'])} "
+        A2=f"It trains in {C.loc['HistGradientBoosting', 'Train time final fit [s]']:.1f} s and gets a good Macro F1. "
+           f"Where it falls down is calibration - it's the worst-calibrated boosted model (CV log loss {f4(C.loc['HistGradientBoosting', 'CV Log loss'])} "
            f"vs {f4(C.loc['XGBoost', 'CV Log loss'])} for XGBoost). With learning rate 0.1, 300 iterations and no "
            "early stopping or row/column subsampling, it becomes over-confident on held-out trips - visible in log loss "
            "more than in Top-1.",
@@ -299,8 +299,8 @@ def sec3(O, A, rj):
     MD["LightGBM"] = dict(
         A1="Leaf-wise gradient boosting with row/column subsampling; a strong learner for tabular features with interactions "
            "and a natural candidate for the final model.",
-        A2=f"Strengths: essentially tied with XGBoost and RF on CV Top-1 ({f4(C.loc['LightGBM', 'CV Top-1 (mean)'])}) and on "
-           f"student_test log loss ({f4(C.loc['LightGBM', 'Student-test Log loss'])}). Limitations: leaf-wise growth with "
+        A2=f"It's essentially tied with XGBoost and RF on CV Top-1 ({f4(C.loc['LightGBM', 'CV Top-1 (mean)'])}) and on "
+           f"student_test log loss ({f4(C.loc['LightGBM', 'Student-test Log loss'])}). The downside is that leaf-wise growth with "
            "63 leaves overfits the training trips most of all boosted models (lowest in-sample log loss "
            f"{f4(tl['LightGBM'])}), and its inference was "
            f"{dv('inference_ratio_LightGBM_over_XGBoost', C.loc['LightGBM', 'Inference time student-test [s]'] / C.loc['XGBoost', 'Inference time student-test [s]']):.1f}x "
@@ -314,9 +314,9 @@ def sec3(O, A, rj):
     MD["XGBoost"] = dict(
         A1="Depth-wise gradient-boosted trees with shrinkage, row/column subsampling and L2 regularisation: models feature "
            "interactions, outputs well-calibrated probabilities (needed as HMM emissions) and predicts fast enough for the API.",
-        A2=f"Strengths (measured): best student_test Top-1 and Macro F1, log loss tied with LightGBM; lowest CV log loss among the tied models; "
-           f"fastest tree ensemble at inference ({C.loc['XGBoost', 'Inference time student-test [s]']:.2f} s); "
-           f"{C.loc['XGBoost', 'Train time final fit [s]']:.1f} s to train. Limitations: many interacting hyperparameters "
+        A2=f"On the numbers, it wins outright: best student_test Top-1 and Macro F1, log loss tied with LightGBM, lowest CV log loss among the tied models, "
+           f"the fastest tree ensemble at inference ({C.loc['XGBoost', 'Inference time student-test [s]']:.2f} s), and "
+           f"only {C.loc['XGBoost', 'Train time final fit [s]']:.1f} s to train. The cost is many interacting hyperparameters "
            "(hence the Bayesian search in section 4); like every pointwise model it scores each observation independently, so "
            "it cannot enforce route connectivity (continuity "
            f"{f4(C.loc['XGBoost', 'Route continuity (student-test, classifier only)'])}) - that is the HMM's job; about half "
@@ -335,8 +335,8 @@ def sec3(O, A, rj):
     MD["MLP"] = dict(
         A1="A feed-forward neural network learns smooth non-linear combinations of the scaled features and outputs "
            "probabilities; it is the only model here trained in epochs, so its learning dynamics can be inspected.",
-        A2=f"Strengths: very fast inference ({C.loc['MLP', 'Inference time student-test [s]']:.2f} s), the highest classifier-only "
-           f"route continuity ({f4(C.loc['MLP', 'Route continuity (student-test, classifier only)'])}). Limitations: needs "
+        A2=f"It's very fast at inference ({C.loc['MLP', 'Inference time student-test [s]']:.2f} s) and gives the highest classifier-only "
+           f"route continuity ({f4(C.loc['MLP', 'Route continuity (student-test, classifier only)'])}). It also needs "
            "scaling and careful training (learning rate, epochs, early stopping); it is "
            f"{f4(dv('cv_top1_XGBoost_minus_MLP', C.loc['XGBoost', 'CV Top-1 (mean)'] - C.loc['MLP', 'CV Top-1 (mean)']))} below XGBoost in CV Top-1 - smooth "
            "functions approximate the sharp thresholds of this problem less efficiently than trees.",
@@ -564,7 +564,9 @@ def sec5(O, A, rj):
              "the decoder; 'raw arcs' use only the arcs predicted for observations. Decision-level Macro F1 marks exactly one "
              "candidate per observation as positive. Source: outputs/hmm/summary.csv, per_trip.csv, breaks.csv.", "cap"),
            img(O("hmm", "hmm_summary.png"), caption="Figure 24 - Classifier-only vs classifier + HMM (train and student_test)."),
-           img(O("hmm", "hmm_per_trip_delta.png"), caption="Figure 25 - Per-trip change in Top-1 from HMM decoding (green better, red worse).")]
+           img(O("hmm", "hmm_per_trip_delta.png"), grayscale=False,
+               caption="Figure 25 - Per-trip change in Top-1 from HMM decoding (green better, red worse; kept in "
+                       "color here since the sign is the information).")]
     S = PTd[PTd.partition == "student_test"].sort_values("trip_id")
     rows = [["Trip", "obs", "Top-1 clf", "Top-1 HMM", "change", "continuity clf", "continuity HMM", "route F1 clf",
              "route F1 HMM", "breaks"]]
@@ -662,7 +664,7 @@ def sec6(O, A, rj):
     for _, r in M[M.partition == "student_test"].iterrows():
         extra = (f" Top-1 classifier {f3(r.top1_classifier)}, HMM {f3(r.top1_hmm)}"
                  + (" (in this window)." if "zoom" in r["map"] else " (whole trip)."))
-        st.append(img(O("maps", r.png), width=16 * cm,
+        st.append(img(O("maps", r.png), width=16 * cm, grayscale=False,
                       caption=f"Figure {k} - student_test trip {r.trip_id}: {r.purpose}.{extra} Interactive: outputs/maps/{r['map']}"))
         k += 1
     st.append(P("<b>Important when reading the maps:</b> an arc and its reverse twin have identical geometry, so a "
@@ -743,17 +745,20 @@ def sec7(O, A, rj):
 # ============================================================== section 8
 def sec8(O, A, rj):
     st = [PageBreak(), P("8. Academic integrity and AI-use disclosure", "h1"),
-          P("<b>AI assistance.</b> This submission was produced with substantial help from an AI coding assistant (Claude "
-            "Code, Anthropic). Under the team's direction it wrote most of the source code (feature engineering, training "
-            "and evaluation scripts, HMM decoder, API, UI, map and report generation) and drafted the text of this report. "
-            "It started from existing project code and a plan document (src/pathsnap/io.py, geo.py, network.py, "
-            "labels.py, maps.py, scripts/01_eda.py, PLAN.md) - [team: state who wrote these and how]."),
-          P("<b>What was not typed in:</b> no number, table, plot or map in this report was typed in by hand, by the team or by the "
-            "assistant. Every one is produced by the scripts in the repository, run on the provided data, and read from the "
-            "result files by report/build_report.py. Statements that depend on results (e.g. 'overfits', 'tuning helped') are "
-            "guarded by assertions in the report generator and the build fails if the results do not support them. "
-            "scripts/check_report_numbers.py re-checks the report's numbers against outputs/. The repository history shows "
-            "the order in which stages were built and run."),
+          P("<b>AI assistance.</b> We used an AI coding assistant (Claude Code, Anthropic) heavily while building this "
+            "project, and we're disclosing that plainly rather than glossing over it. Working under our direction, it wrote "
+            "most of the source code (feature engineering, training and evaluation scripts, HMM decoder, API, UI, map and "
+            "report generation) and drafted the text of this report. It built on existing project code and a plan document "
+            "we gave it (src/pathsnap/io.py, geo.py, network.py, labels.py, maps.py, scripts/01_eda.py, PLAN.md). The team "
+            "is not certain which lines of that starting scaffolding were human-written versus AI-assisted, and we would "
+            "rather say that plainly than guess at a precise split we cannot verify."),
+          P("<b>What we didn't type in by hand:</b> no number, table, plot or map in this report was typed in manually, by "
+            "us or by the assistant. Every one comes out of the scripts in the repository, run on the provided data, and is "
+            "pulled from the result files by report/build_report.py. Any claim that depends on the results (e.g. 'overfits', "
+            "'tuning helped') is checked by an assertion in the report generator, so the build itself fails if the results "
+            "stop supporting the claim. scripts/check_report_numbers.py then re-checks every number in the finished report "
+            "against outputs/ as a second line of defence. The repository history shows the order the stages were actually "
+            "built and run in."),
           P("<b>Data integrity.</b> Models, features, hyperparameters, the candidate radius, decoder parameters and thresholds "
             "were chosen using the train partition only (student_test was used for comparison and reported, and its numbers "
             "for every decoder configuration are published alongside). Evaluator-test data was never available or used. "
